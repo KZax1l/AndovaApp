@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:constraint="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/guide_line_toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        constraint:layout_constraintGuide_percent="0.1" />
+
+    <android.support.v7.widget.Toolbar xmlns:toolbar="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/toolbar"
+        style="@style/AndovaAPP.Widget.Toolbar"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        constraint:layout_constraintTop_toTopOf="parent"
+        toolbar:layout_constraintBottom_toBottomOf="@id/guide_line_toolbar"
+        toolbar:layout_constraintLeft_toLeftOf="parent"
+        toolbar:layout_constraintRight_toRightOf="parent"
+        toolbar:title="@string/app_name" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/rv_module"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        constraint:layout_constraintBottom_toBottomOf="parent"
+        constraint:layout_constraintLeft_toLeftOf="parent"
+        constraint:layout_constraintRight_toRightOf="parent"
+        constraint:layout_constraintTop_toTopOf="parent" />
+</android.support.constraint.ConstraintLayout>

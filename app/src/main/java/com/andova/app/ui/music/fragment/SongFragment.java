@@ -86,10 +86,10 @@ public class SongFragment extends Fragment {
         recyclerView.setAdapter(mAdapter);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL));
 
-        loadSongs(mAction);
+        loadSongs();
     }
 
-    private void loadSongs(String action) {
+    private void loadSongs() {
         mSubscription = SongLoader.getAllSongs(getContext())
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())

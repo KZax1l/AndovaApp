@@ -3,6 +3,7 @@ package com.andova.app.view;
 import android.content.Context;
 import android.support.v4.widget.DrawerLayout;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.MotionEvent;
 import android.view.ViewConfiguration;
 
@@ -33,6 +34,8 @@ public class NestedDrawerLayout extends DrawerLayout {
 
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
+        if (!isDrawerOpen(Gravity.START) && !isDrawerOpen(Gravity.END))
+            return super.onInterceptTouchEvent(ev);
         try {
             final float x = ev.getX();
             final float y = ev.getY();

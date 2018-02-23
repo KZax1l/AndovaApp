@@ -11,6 +11,7 @@
     <string name="music_song">Song</string>
     <string name="music_album">Album</string>
     <string name="music_artist">Artist</string>
+    <string name="music_play_shuffle">Play shuffle in all</string>
 
     <string name="setting">Setting</string>
     <string name="exit">Exit</string>

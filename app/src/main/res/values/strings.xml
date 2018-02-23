@@ -11,6 +11,7 @@
     <string name="music_song">歌曲</string>
     <string name="music_album">专辑</string>
     <string name="music_artist">歌手</string>
+    <string name="music_play_shuffle">随机播放全部</string>
 
     <string name="setting">设置</string>
     <string name="exit">退出</string>

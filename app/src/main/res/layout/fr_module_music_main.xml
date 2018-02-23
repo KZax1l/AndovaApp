@@ -17,6 +17,7 @@
 
         <android.support.design.widget.TabLayout xmlns:tab="http://schemas.android.com/apk/res-auto"
             android:id="@+id/tab_page"
+            style="@style/AndovaAPP.Widget.TabLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/colorToolbar"

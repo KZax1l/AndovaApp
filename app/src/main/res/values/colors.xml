@@ -5,6 +5,7 @@
     <color name="colorAccent">#FF4081</color>
 
     <color name="colorWhite">#FFFFFF</color>
+    <color name="colorSubTextWhite">#B3FFFFFF</color>
 
-    <color name="colorToolbar">#1cb1f6</color>
+    <color name="colorToolbar">#1CB1F6</color>
 </resources>

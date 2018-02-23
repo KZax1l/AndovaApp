@@ -16,4 +16,12 @@
         <item name="android:background">@color/colorToolbar</item>
         <item name="titleTextColor">@color/colorWhite</item>
     </style>
+
+    <style name="AndovaAPP.Widget.TabLayout">
+        <item name="tabGravity">center</item>
+        <item name="tabMode">fixed</item>
+        <item name="tabTextColor">@color/colorSubTextWhite</item>
+        <item name="tabIndicatorColor">@color/colorWhite</item>
+        <item name="tabSelectedTextColor">@color/colorWhite</item>
+    </style>
 </resources>

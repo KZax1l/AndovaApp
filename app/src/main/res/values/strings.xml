@@ -2,12 +2,15 @@
     <string name="app_name">AndovaApp</string>
 
     <string name="music_my_music">我的歌曲</string>
-    <string name="music_play_list">我的歌单</string>
+    <string name="music_playlist">我的歌单</string>
     <string name="music_folder">文件夹</string>
     <string name="music_favorite">我喜欢的</string>
     <string name="music_recent_play">最近播放</string>
     <string name="music_recent_add">最近添加</string>
     <string name="music_play_ranking">播放排行</string>
+    <string name="music_song">歌曲</string>
+    <string name="music_album">专辑</string>
+    <string name="music_artist">歌手</string>
 
     <string name="setting">设置</string>
     <string name="exit">退出</string>

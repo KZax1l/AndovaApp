@@ -19,6 +19,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name="com.andova.app.ui.music.MusicActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

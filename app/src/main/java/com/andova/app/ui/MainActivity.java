@@ -1,5 +1,6 @@
 package com.andova.app.ui;
 
+import android.content.Intent;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.andova.app.R;
+import com.andova.app.ui.music.MusicActivity;
 
 /**
  * Created by Administrator on 2018-02-22.
@@ -42,6 +44,12 @@ public class MainActivity extends BaseActivity {
         public void onBindViewHolder(ViewHolder holder, int position) {
             if (holder.ivIcon == null) return;
             holder.ivIcon.setImageResource(R.mipmap.ic_module_music);
+            holder.ivIcon.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    v.getContext().startActivity(new Intent(v.getContext(), MusicActivity.class));
+                }
+            });
         }
 
         @Override

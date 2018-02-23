@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">AndovaApp</string>
+
+    <string name="music_my_music">My Music</string>
+    <string name="music_play_list">Play List</string>
+    <string name="music_folder">Folder</string>
+    <string name="music_favorite">Favorite</string>
+    <string name="music_recent_play">Recent Play</string>
+    <string name="music_recent_add">Recent Add</string>
+    <string name="music_play_ranking">Play Ranking</string>
+
+    <string name="setting">Setting</string>
+    <string name="exit">Exit</string>
+</resources>

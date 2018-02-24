@@ -6,6 +6,8 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+
+        <item name="android:textColorPrimary">@color/colorPrimaryTextBlack</item>
     </style>
 
     <style name="AndovaAPP" />
@@ -23,5 +25,41 @@
         <item name="tabTextColor">@color/colorSubTextWhite</item>
         <item name="tabIndicatorColor">@color/colorWhite</item>
         <item name="tabSelectedTextColor">@color/colorWhite</item>
+    </style>
+
+    <style name="AndovaAPP.Widget.ConstraintLayout" />
+
+    <style name="AndovaAPP.Widget.ConstraintLayout.Guideline" />
+
+    <style name="AndovaAPP.Widget.ConstraintLayout.Guideline.Vertical">
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="AndovaAPP.Widget.ConstraintLayout.Guideline.Vertical.Left" />
+
+    <style name="AndovaAPP.Widget.ConstraintLayout.Guideline.Vertical.Left.Normal">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">0dp</item>
+        <item name="layout_constraintGuide_percent">0.05</item>
+    </style>
+
+    <style name="AndovaAPP.Widget.TextView" />
+
+    <style name="AndovaAPP.Widget.TextView.ListItemTitleStyle" />
+
+
+    <style name="AndovaAPP.Widget.TextView.ListItemTitleStyle.Body1" parent="@style/TextAppearance.AppCompat.Body1">
+        <item name="android:textColor">?android:textColorPrimary</item>
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+    </style>
+
+    <style name="AndovaAPP.Widget.TextView.ListItemSubTitleStyle" />
+
+    <style name="AndovaAPP.Widget.TextView.ListItemSubTitleStyle.Caption" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:ellipsize">end</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:includeFontPadding">false</item>
+        <item name="android:lineSpacingExtra">0.0px</item>
     </style>
 </resources>

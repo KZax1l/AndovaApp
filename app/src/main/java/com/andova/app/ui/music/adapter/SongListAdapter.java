@@ -1,5 +1,6 @@
 package com.andova.app.ui.music.adapter;
 
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 
 import com.andova.app.R;
 import com.andova.app.ui.music.model.Song;
+import com.andova.app.ui.music.player.MusicPlayer;
 import com.andova.app.util.DensityUtil;
 import com.andova.app.util.MusicUtil;
 import com.bumptech.glide.Glide;
@@ -124,11 +126,11 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         return ret;
     }
 
-    public void setSongList(List<Song> arraylist) {
-        this.mSongList = arraylist;
+    public void setSongList(List<Song> list) {
+        this.mSongList = list;
         this.songIDs = getSongIds();
-        if (arraylist.size() != 0) {
-            this.topPlayScore = arraylist.get(0).getPlayCountScore();
+        if (list.size() != 0) {
+            this.topPlayScore = list.get(0).getPlayCountScore();
         }
         notifyDataSetChanged();
     }
@@ -144,7 +146,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
         static final int TYPE_SONG = 1;
     }
 
-    public class ItemHolder extends RecyclerView.ViewHolder {
+    public class ItemHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         private TextView title;
         private TextView artist;
         private TextView album;
@@ -160,6 +162,18 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             this.albumArt = (ImageView) view.findViewById(R.id.image);
             this.popupMenu = (ImageView) view.findViewById(R.id.popup_menu);
             this.playscore = view.findViewById(R.id.playscore);
+            view.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            final Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    MusicPlayer.playAll(songIDs, getAdapterPosition() - 1, -1, false);
+                }
+            }, 100);
         }
     }
 

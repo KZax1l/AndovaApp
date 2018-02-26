@@ -25,6 +25,8 @@ import android.os.RemoteException;
 import android.provider.MediaStore;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
+import android.support.v7.graphics.Palette;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -330,6 +332,9 @@ public class MusicService extends Service {
                     new android.support.v4.media.app.NotificationCompat.MediaStyle()
                             .setShowActionsInCompactView(0, 1, 2, 3);
             builder.setStyle(style);
+        }
+        if (artwork != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder.setColor(Palette.from(artwork).generate().getMutedColor(ContextCompat.getColor(this, R.color.colorToolbar)));
         }
 
         return builder.build();

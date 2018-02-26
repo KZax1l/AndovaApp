@@ -445,9 +445,7 @@ public class MusicService extends Service {
         @Override
         public void handleMessage(final Message msg) {
             final MusicService service = mService.get();
-            if (service == null) {
-                return;
-            }
+            if (service == null) return;
 
             synchronized (service) {
                 switch (msg.what) {
@@ -523,10 +521,8 @@ public class MusicService extends Service {
 
                 player.prepare();
             } catch (final IOException todo) {
-
                 return false;
             } catch (final IllegalArgumentException todo) {
-
                 return false;
             }
             player.setOnCompletionListener(this);
@@ -625,22 +621,25 @@ public class MusicService extends Service {
 
         @Override
         public void stop() throws RemoteException {
+            if (mService.get() == null) return;
             mService.get().stop();
         }
 
         @Override
         public void pause() throws RemoteException {
+            if (mService.get() == null) return;
             mService.get().pause();
         }
 
-
         @Override
         public void open(long[] list, int position, long sourceId) throws RemoteException {
+            if (mService.get() == null) return;
             mService.get().open(list, position, sourceId);
         }
 
         @Override
         public void play() throws RemoteException {
+            if (mService.get() == null) return;
             mService.get().play();
         }
     }

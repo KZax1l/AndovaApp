@@ -1,13 +1,20 @@
 package com.andova.app.ui.music.player;
 
+import android.app.Notification;
+import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -16,16 +23,25 @@ import android.os.Message;
 import android.os.PowerManager;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
+import android.text.TextUtils;
 import android.util.Log;
 
+import com.andova.app.Constants;
+import com.andova.app.R;
 import com.andova.app.ui.music.IMusicServiceAPI;
+import com.andova.app.ui.music.MusicActivity;
 import com.andova.app.ui.music.model.MusicPlaybackTrack;
+import com.andova.app.util.MusicUtil;
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Created by Administrator on 2018-02-24.
@@ -76,8 +92,24 @@ public class MusicService extends Service {
      */
     private static final int MEDIA_PLAYER_ACTION_FADE_UP = 7;
 
+    private static final int NOTIFY_MODE_NONE = 0;
+    private static final int NOTIFY_MODE_FOREGROUND = 1;
+    private static final int NOTIFY_MODE_BACKGROUND = 2;
+
+    public static final String BROADCAST_ACTION_PREVIOUS = "com.andova.app.ui.music.player.MusicService.PREVIOUS";
+    public static final String BROADCAST_ACTION_TOGGLE = "com.andova.app.ui.music.player.MusicService.TOGGLE";
+    public static final String BROADCAST_ACTION_NEXT = "com.andova.app.ui.music.player.MusicService.NEXT";
+
+    private static final int IDLE_DELAY = 5 * 60 * 1000;
+
     private int mPlayPos = -1;
     private int mServiceStartId = -1;
+    private int mNotifyMode = NOTIFY_MODE_NONE;
+    private long mLastPlayedTime;
+    /**
+     * 开始播放歌曲时，记录当前时间戳
+     */
+    private long mNotificationPostTime = 0;
     private boolean mServiceInUse = false;
     private boolean mIsSupposedToBePlaying = false;
     private ArrayList<MusicPlaybackTrack> mPlaylist = new ArrayList<>(100);
@@ -92,12 +124,24 @@ public class MusicService extends Service {
     private AudioManager mAudioManager;
     private HandlerThread mHandlerThread;
     private MusicPlayerHandler mPlayerHandler;
+    private NotificationManagerCompat mNotificationManager;
 
-    private final AudioManager.OnAudioFocusChangeListener mAudioFocusListener = new AudioManager.OnAudioFocusChangeListener() { //监听,转发给mPlayerHandler处理
-
+    /**
+     * 监听,转发给mPlayerHandler处理
+     */
+    private final AudioManager.OnAudioFocusChangeListener mAudioFocusListener = new AudioManager.OnAudioFocusChangeListener() {
         @Override
         public void onAudioFocusChange(final int focusChange) {
             mPlayerHandler.obtainMessage(MEDIA_PLAYER_ACTION_FOCUS_CHANGED, focusChange, 0).sendToTarget();
+        }
+    };
+    /**
+     * 监听各种action
+     */
+    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, final Intent intent) {
+            handleCommandIntent(intent);
         }
     };
 
@@ -127,6 +171,8 @@ public class MusicService extends Service {
         Log.d(TAG, "Creating service");
         super.onCreate();
 
+        mNotificationManager = NotificationManagerCompat.from(this);
+
         mHandlerThread = new HandlerThread("MusicPlayerHandler", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
 
@@ -136,6 +182,14 @@ public class MusicService extends Service {
 
         mPlayer = new MultiPlayer(this); // 当Player接收到播放状态相关的回调时,发送信息给Handler处理
         mPlayer.setHandler(mPlayerHandler);
+
+        // Initialize the intent filter and each action
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(BROADCAST_ACTION_TOGGLE);
+        filter.addAction(BROADCAST_ACTION_NEXT);
+        filter.addAction(BROADCAST_ACTION_PREVIOUS);
+        // Attach the broadcast listener
+        registerReceiver(mIntentReceiver, filter);
     }
 
     @Override
@@ -149,6 +203,8 @@ public class MusicService extends Service {
         mPlayer = null;
 
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
+        closeCursor();
+        unregisterReceiver(mIntentReceiver);
     }
 
     @Override
@@ -157,6 +213,130 @@ public class MusicService extends Service {
         mServiceStartId = startId;
 
         return START_NOT_STICKY;
+    }
+
+    /**
+     * 处理Notification触发的媒体按钮点击事件
+     */
+    private void handleCommandIntent(Intent intent) {
+        final String action = intent.getAction();
+        if (TextUtils.isEmpty(action)) return;
+        switch (action) {
+            case BROADCAST_ACTION_NEXT:
+                break;
+            case BROADCAST_ACTION_PREVIOUS:
+                break;
+            case BROADCAST_ACTION_TOGGLE:
+                if (isPlaying()) {
+                    pause();
+                } else {
+                    play();
+                }
+                break;
+        }
+    }
+
+    /**
+     * 更新状态栏通知
+     */
+    private void updateNotification() {
+        final int newNotifyMode;
+        if (isPlaying()) {
+            newNotifyMode = NOTIFY_MODE_FOREGROUND;
+        } else if (recentlyPlayed()) {
+            newNotifyMode = NOTIFY_MODE_BACKGROUND;
+        } else {
+            newNotifyMode = NOTIFY_MODE_NONE;
+        }
+
+        int notificationId = hashCode();
+        if (mNotifyMode != newNotifyMode) {
+            if (mNotifyMode == NOTIFY_MODE_FOREGROUND) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                    stopForeground(newNotifyMode == NOTIFY_MODE_NONE);
+                else
+                    stopForeground(newNotifyMode == NOTIFY_MODE_NONE || newNotifyMode == NOTIFY_MODE_BACKGROUND);
+            } else if (newNotifyMode == NOTIFY_MODE_NONE) {
+                mNotificationManager.cancel(notificationId);
+                mNotificationPostTime = 0;
+            }
+        }
+
+        if (newNotifyMode == NOTIFY_MODE_FOREGROUND) {
+            startForeground(notificationId, buildNotification());
+        } else if (newNotifyMode == NOTIFY_MODE_BACKGROUND) {
+            mNotificationManager.notify(notificationId, buildNotification());
+        }
+
+        mNotifyMode = newNotifyMode;
+    }
+
+    /**
+     * 构建音乐播放器通知栏
+     */
+    private Notification buildNotification() {
+        final String albumName = getAlbumName();
+        final String artistName = getArtistName();
+        String text = TextUtils.isEmpty(albumName) ? artistName : artistName + " - " + albumName;
+
+        Intent nowPlayingIntent = new Intent(this, MusicActivity.class);
+        nowPlayingIntent.setAction(Constants.NAVIGATE_ACTION_MUSIC);
+        PendingIntent clickIntent = PendingIntent.getActivity(this, 0, nowPlayingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        Bitmap artwork = null;
+        try {
+            artwork = Glide.with(this).asBitmap().load(MusicUtil.getAlbumArtUri(getAlbumId())).submit().get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+
+        if (artwork == null) {
+            try {
+                artwork = Glide.with(this).asBitmap().load(R.mipmap.ic_album_default).submit().get();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if (mNotificationPostTime == 0) {
+            mNotificationPostTime = System.currentTimeMillis();
+        }
+
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
+                .setSmallIcon(R.mipmap.ic_music_note_white_48dp)
+                .setLargeIcon(artwork)
+                .setContentIntent(clickIntent)
+                .setContentTitle(getTrackName())
+                .setContentText(text)
+                .setWhen(mNotificationPostTime)
+                .addAction(R.mipmap.ic_skip_previous_white_48dp,
+                        "",
+                        retrievePlaybackAction(BROADCAST_ACTION_PREVIOUS))
+                .addAction(isPlaying() ? R.mipmap.ic_pause_white_48dp : R.mipmap.ic_play_arrow_white_48dp,
+                        "",
+                        retrievePlaybackAction(BROADCAST_ACTION_TOGGLE))
+                .addAction(R.mipmap.ic_skip_next_white_48dp,
+                        "",
+                        retrievePlaybackAction(BROADCAST_ACTION_NEXT));
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) builder.setShowWhen(false);
+
+        return builder.build();
+    }
+
+    /**
+     * 点击了UI上的媒体按键,发送事件给MusicService
+     */
+    private PendingIntent retrievePlaybackAction(final String action) {
+        final ComponentName serviceName = new ComponentName(this, MusicService.class);
+        Intent intent = new Intent(action);
+        intent.setComponent(serviceName);
+
+        return PendingIntent.getService(this, 0, intent, 0);
     }
 
     /**
@@ -218,6 +398,7 @@ public class MusicService extends Service {
             mPlayerHandler.sendEmptyMessage(MEDIA_PLAYER_ACTION_FADE_UP); // 组件调到正常音量
 
             setIsSupposedToBePlaying(true, true);
+            updateNotification();
         }
     }
 
@@ -252,6 +433,17 @@ public class MusicService extends Service {
             Timer timer = new Timer();
             timer.schedule(task, 200);
         }
+    }
+
+    public boolean isPlaying() {
+        return mIsSupposedToBePlaying;
+    }
+
+    /**
+     * 是否正在播放，或距离上次播放不超过5分钟
+     */
+    private boolean recentlyPlayed() {
+        return isPlaying() || System.currentTimeMillis() - mLastPlayedTime < IDLE_DELAY;
     }
 
     private void setIsSupposedToBePlaying(boolean value, boolean notify) {
@@ -427,6 +619,27 @@ public class MusicService extends Service {
         synchronized (this) {
             if (mCursor == null) return -1;
             return mCursor.getLong(mCursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM_ID));
+        }
+    }
+
+    public String getAlbumName() {
+        synchronized (this) {
+            if (mCursor == null) return null;
+            return mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ALBUM));
+        }
+    }
+
+    public String getArtistName() {
+        synchronized (this) {
+            if (mCursor == null) return null;
+            return mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.ARTIST));
+        }
+    }
+
+    public String getTrackName() {
+        synchronized (this) {
+            if (mCursor == null) return null;
+            return mCursor.getString(mCursor.getColumnIndexOrThrow(MediaStore.Audio.AudioColumns.TITLE));
         }
     }
 

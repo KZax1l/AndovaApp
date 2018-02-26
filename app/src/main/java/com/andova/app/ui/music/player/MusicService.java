@@ -324,6 +324,13 @@ public class MusicService extends Service {
                         retrievePlaybackAction(BROADCAST_ACTION_NEXT));
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) builder.setShowWhen(false);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            builder.setVisibility(Notification.VISIBILITY_PUBLIC);
+            android.support.v4.media.app.NotificationCompat.MediaStyle style =
+                    new android.support.v4.media.app.NotificationCompat.MediaStyle()
+                            .setShowActionsInCompactView(0, 1, 2, 3);
+            builder.setStyle(style);
+        }
 
         return builder.build();
     }

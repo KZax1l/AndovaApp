@@ -214,6 +214,8 @@ public class MusicService extends Service {
         Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
         mServiceStartId = startId;
 
+        if (intent != null) handleCommandIntent(intent);
+
         return START_NOT_STICKY;
     }
 
@@ -348,6 +350,9 @@ public class MusicService extends Service {
         Intent intent = new Intent(action);
         intent.setComponent(serviceName);
 
+        /*
+        这里也可以直接通过广播来实现—— PendingIntent.getBroadcast(this, 0, new Intent(action), 0);
+         */
         return PendingIntent.getService(this, 0, intent, 0);
     }
 

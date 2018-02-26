@@ -315,13 +315,13 @@ public class MusicService extends Service {
                 .setContentTitle(getTrackName())
                 .setContentText(text)
                 .setWhen(mNotificationPostTime)
-                .addAction(R.mipmap.ic_skip_previous_white_48dp,
+                .addAction(R.mipmap.ic_skip_previous_white_24dp,
                         "",
                         retrievePlaybackAction(BROADCAST_ACTION_PREVIOUS))
-                .addAction(isPlaying() ? R.mipmap.ic_pause_white_48dp : R.mipmap.ic_play_arrow_white_48dp,
+                .addAction(isPlaying() ? R.mipmap.ic_pause_white_24dp : R.mipmap.ic_play_arrow_white_24dp,
                         "",
                         retrievePlaybackAction(BROADCAST_ACTION_TOGGLE))
-                .addAction(R.mipmap.ic_skip_next_white_48dp,
+                .addAction(R.mipmap.ic_skip_next_white_24dp,
                         "",
                         retrievePlaybackAction(BROADCAST_ACTION_NEXT));
 

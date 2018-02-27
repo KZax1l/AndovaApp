@@ -133,6 +133,7 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
 
     @Override
     public void onCompletion(final MediaPlayer mp) {
+        System.out.println("Media Player Completion");
         if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
             mCurrentMediaPlayer.release();
             mCurrentMediaPlayer = mNextMediaPlayer;

@@ -1,10 +1,8 @@
 package com.andova.app.ui.music.player;
 
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -52,15 +50,6 @@ public class MusicService extends Service {
             mPlayerHandler.obtainMessage(MEDIA_PLAYER_CODE_FOCUS_CHANGED, focusChange, 0).sendToTarget();
         }
     };
-    /**
-     * 监听各种action
-     */
-    private final BroadcastReceiver mIntentReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, final Intent intent) {
-            handleCommandIntent(intent);
-        }
-    };
 
     @Override
     public IBinder onBind(final Intent intent) {
@@ -102,14 +91,6 @@ public class MusicService extends Service {
         mHandlerThread.start();
 
         mPlayerHandler = new MusicPlayerHandler(mMusicPlayer, mHandlerThread.getLooper()); // 处理播放状态相关
-
-        // Initialize the intent filter and each action
-        final IntentFilter filter = new IntentFilter();
-        filter.addAction(BROADCAST_ACTION_TOGGLE);
-        filter.addAction(BROADCAST_ACTION_NEXT);
-        filter.addAction(BROADCAST_ACTION_PREVIOUS);
-        // Attach the broadcast listener
-        registerReceiver(mIntentReceiver, filter);
     }
 
     @Override
@@ -124,7 +105,6 @@ public class MusicService extends Service {
 
         mAudioManager.abandonAudioFocus(mAudioFocusListener);
         mDataSource.closeCursor();
-        unregisterReceiver(mIntentReceiver);
     }
 
     @Override
@@ -142,6 +122,7 @@ public class MusicService extends Service {
      */
     private void handleCommandIntent(Intent intent) {
         final String action = intent.getAction();
+        System.out.println("handleCommandIntent ->action:" + action);
         if (TextUtils.isEmpty(action)) return;
         switch (action) {
             case BROADCAST_ACTION_NEXT:

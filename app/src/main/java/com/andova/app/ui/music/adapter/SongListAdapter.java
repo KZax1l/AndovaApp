@@ -12,7 +12,7 @@ import android.widget.TextView;
 
 import com.andova.app.R;
 import com.andova.app.ui.music.model.Song;
-import com.andova.app.ui.music.player.MusicPlayer;
+import com.andova.app.ui.music.player.MusicTracker;
 import com.andova.app.util.DensityUtil;
 import com.andova.app.util.MusicUtil;
 import com.bumptech.glide.Glide;
@@ -171,7 +171,7 @@ public class SongListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolde
             handler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    MusicPlayer.playAll(songIDs, getAdapterPosition() - 1, -1, false);
+                    MusicTracker.playAll(songIDs, getAdapterPosition() - 1, -1, false);
                 }
             }, 100);
         }

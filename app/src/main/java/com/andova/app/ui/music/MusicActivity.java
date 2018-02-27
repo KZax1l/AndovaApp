@@ -13,9 +13,9 @@ import com.andova.app.Constants;
 import com.andova.app.R;
 import com.andova.app.ui.BaseActivity;
 import com.andova.app.ui.music.fragment.MainFragment;
-import com.andova.app.ui.music.player.MusicPlayer;
+import com.andova.app.ui.music.player.MusicTracker;
 
-import static com.andova.app.ui.music.player.MusicPlayer.sService;
+import static com.andova.app.ui.music.player.MusicTracker.sService;
 
 /**
  * Created by Administrator on 2018-02-23.
@@ -24,12 +24,12 @@ import static com.andova.app.ui.music.player.MusicPlayer.sService;
  * @since 1.0.0
  */
 public class MusicActivity extends BaseActivity implements ServiceConnection {
-    private MusicPlayer.ServiceToken mToken;
+    private MusicTracker.ServiceToken mToken;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mToken = MusicPlayer.bindToService(this, this);
+        mToken = MusicTracker.bindToService(this, this);
         setContentView(R.layout.ac_module_music);
 
         pageToMain((NavigationView) findViewById(R.id.nav_list));
@@ -56,7 +56,7 @@ public class MusicActivity extends BaseActivity implements ServiceConnection {
         super.onDestroy();
         // Unbind from the service
         if (mToken != null) {
-            MusicPlayer.unbindFromService(mToken);
+            MusicTracker.unbindFromService(mToken);
             mToken = null;
         }
     }

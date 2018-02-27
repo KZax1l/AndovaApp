@@ -19,7 +19,7 @@ import java.util.WeakHashMap;
  * @author kzaxil
  * @since 1.0.0
  */
-public class MusicPlayer {
+public class MusicTracker {
     public static IMusicServiceAPI sService = null;
 
     private static final WeakHashMap<Context, ServiceBinder> mConnectionMap;

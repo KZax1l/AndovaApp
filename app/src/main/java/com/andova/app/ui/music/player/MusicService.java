@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
-import android.util.Log;
 
 import com.andova.app.ui.music.IMusicServiceAPI;
 
@@ -26,8 +25,6 @@ import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_COD
  * @since 1.0.0
  */
 public class MusicService extends Service {
-    private static final String TAG = MusicService.class.getSimpleName();
-
     public static final String BROADCAST_ACTION_PREVIOUS = "com.andova.app.ui.music.player.MusicService.PREVIOUS";
     public static final String BROADCAST_ACTION_TOGGLE = "com.andova.app.ui.music.player.MusicService.TOGGLE";
     public static final String BROADCAST_ACTION_NEXT = "com.andova.app.ui.music.player.MusicService.NEXT";
@@ -73,7 +70,7 @@ public class MusicService extends Service {
 
     @Override
     public boolean onUnbind(final Intent intent) {
-        Log.d(TAG, "Service unbound");
+        System.out.println("Service unbound");
         mServiceInUse = false;
 
         if (isPlaying()) return true;
@@ -88,7 +85,7 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
-        Log.d(TAG, "Creating service");
+        System.out.println("Creating service");
         super.onCreate();
 
         mNotificationManager = NotificationManagerCompat.from(this);
@@ -117,7 +114,7 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
-        Log.d(TAG, "Destroying service");
+        System.out.println("Destroying service");
         super.onDestroy();
 
         mPlayerHandler.removeCallbacksAndMessages(null);
@@ -132,7 +129,7 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        Log.d(TAG, "Got new intent " + intent + ", startId = " + startId);
+        System.out.println("Got new intent " + intent + ", startId = " + startId);
         mServiceStartId = startId;
 
         if (intent != null) handleCommandIntent(intent);

@@ -6,7 +6,6 @@ import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.PowerManager;
-import android.util.Log;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -22,8 +21,6 @@ import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_COD
  * @since 1.0.0
  */
 class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnCompletionListener {
-    private static final String TAG = MediaTracker.class.getSimpleName();
-
     private boolean mIsInitialized = false;
 
     private Handler mHandler;
@@ -69,9 +66,9 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
         try {
             mCurrentMediaPlayer.setNextMediaPlayer(null);
         } catch (IllegalArgumentException e) {
-            Log.i(TAG, "Next media player is current one, continuing");
+            System.out.println("Next media player is current one, continuing");
         } catch (IllegalStateException e) {
-            Log.e(TAG, "Media player not initialized!");
+            System.out.println("Media player not initialized!");
             return;
         }
         if (mNextMediaPlayer != null) {
@@ -130,7 +127,7 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
 
     @Override
     public boolean onError(final MediaPlayer mp, final int what, final int extra) {
-        Log.w(TAG, "Music Server Error what: " + what + " extra: " + extra);
+        System.out.println("Music Server Error what: " + what + " extra: " + extra);
         return false;
     }
 

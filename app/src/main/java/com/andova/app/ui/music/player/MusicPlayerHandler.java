@@ -4,7 +4,6 @@ import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 
 import java.lang.ref.WeakReference;
 
@@ -16,8 +15,6 @@ import java.lang.ref.WeakReference;
  * @since 1.0.0
  */
 class MusicPlayerHandler extends Handler {
-    private static final String TAG = MusicPlayerHandler.class.getSimpleName();
-
     /**
      * {@link MediaPlayer}播放完毕且暂时没有下一首
      */
@@ -90,7 +87,7 @@ class MusicPlayerHandler extends Handler {
                 case MEDIA_PLAYER_CODE_RELEASE_WAKELOCK:
                     break;
                 case MEDIA_PLAYER_CODE_FOCUS_CHANGED:
-                    Log.d(TAG, "Received audio focus change event " + msg.arg1);
+                    System.out.println("Received audio focus change event " + msg.arg1);
                     break;
                 default:
                     break;

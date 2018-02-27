@@ -7,7 +7,6 @@ import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.util.Log;
 
 import com.andova.app.ui.music.model.MusicPlaybackTrack;
 
@@ -25,7 +24,6 @@ import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_COD
  * @since 1.0.0
  */
 class MusicPlayer {
-    private static final String TAG = MusicPlayer.class.getSimpleName();
     private static final int IDLE_DELAY = 5 * 60 * 1000;
     private ArrayList<MusicPlaybackTrack> mPlaylist = new ArrayList<>(100);
 
@@ -73,7 +71,7 @@ class MusicPlayer {
      * @param goToIdle 是否准备关闭Service
      */
     private void stop(final boolean goToIdle) {
-        Log.d(TAG, "Stopping playback, goToIdle = " + goToIdle);
+        System.out.println("Stopping playback, goToIdle = " + goToIdle);
         if (mMediaTracker.isInitialized()) mMediaTracker.stop();
         mFileToPlay = null;
     }
@@ -86,7 +84,7 @@ class MusicPlayer {
     private boolean play(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler, boolean createNewNextTrack) {
         int status = audioManager.requestAudioFocus(listener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
-        Log.d(TAG, "Starting playback: audio focus request status = " + status);
+        System.out.println("Starting playback: audio focus request status = " + status);
 
         if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return false;
 
@@ -117,7 +115,7 @@ class MusicPlayer {
      * 暂停播放
      */
     boolean pause(final Context context, MusicPlayerHandler handler) {
-        Log.d(TAG, "Pausing playback");
+        System.out.println("Pausing playback");
         synchronized (this) {
             handler.removeMessages(MEDIA_PLAYER_CODE_FADE_UP);
             handler.sendEmptyMessage(MEDIA_PLAYER_CODE_FADE_DOWN);
@@ -214,7 +212,7 @@ class MusicPlayer {
      * 根据path通过多种方式来获取歌曲的信息,初始化player
      */
     private boolean openFile(Context context, final String path) {
-        Log.d(TAG, "openFile: path = " + path);
+        System.out.println("openFile: path = " + path);
         synchronized (this) {
             if (path == null) return false;
 

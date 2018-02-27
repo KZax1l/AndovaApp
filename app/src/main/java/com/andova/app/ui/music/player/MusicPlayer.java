@@ -160,6 +160,48 @@ class MusicPlayer {
     }
 
     /**
+     * 播放下一首
+     *
+     * @param force 控制播放列表播放完时是否重新开始
+     */
+    public void next(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener,
+                     MusicPlayerHandler handler, final boolean force) {
+        System.out.println("Going to next track");
+        synchronized (this) {
+            if (mPlaylist.size() <= 0) {
+                System.out.println("No play queue");
+                return;
+            }
+            int pos;
+            if (force) {
+                pos = getNextPosition(true);
+            } else {
+                pos = mNextPlayPos;
+                if (pos < 0) pos = getNextPosition(false);
+            }
+
+            if (pos < 0) { //无法选取下一首歌
+                setIsSupposedToBePlaying(false, true);
+                return;
+            }
+
+            stop(false);
+            setAndRecordPlayPos(pos); //设置当前播放曲目的ID
+            openCurrentAndNext(context);
+            play(context, audioManager, listener, handler, true); //不重新产生mNextPlayPos
+        }
+    }
+
+    /**
+     * 给mPlayPos设置播放的曲目ID
+     */
+    private void setAndRecordPlayPos(int nextPos) {
+        synchronized (this) {
+            mPlayPos = nextPos;
+        }
+    }
+
+    /**
      * 获取播放列表中的前一首歌曲
      */
     private int getPreviousPlayPosition() {
@@ -202,7 +244,7 @@ class MusicPlayer {
             position = mPlaylist.size();
         }
 
-        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<MusicPlaybackTrack>(addLength);
+        final ArrayList<MusicPlaybackTrack> arrayList = new ArrayList<>(addLength);
         for (int i = 0; i < list.length; i++) {
             arrayList.add(new MusicPlaybackTrack(list[i], sourceId, i));
         }
@@ -307,7 +349,7 @@ class MusicPlayer {
      * @return -1表示无法确定下一曲目位置
      */
     private int getNextPosition(final boolean force) {
-        return 0;
+        return mPlayPos >= mPlaylist.size() - 1 ? 0 : mPlayPos + 1;
     }
 
     private void setNextTrack() {

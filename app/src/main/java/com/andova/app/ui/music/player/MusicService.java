@@ -126,6 +126,7 @@ public class MusicService extends Service {
         if (TextUtils.isEmpty(action)) return;
         switch (action) {
             case BROADCAST_ACTION_NEXT:
+                next();
                 break;
             case BROADCAST_ACTION_PREVIOUS:
                 previous();
@@ -170,6 +171,10 @@ public class MusicService extends Service {
         mMusicPlayer.previous(this, mAudioManager, mAudioFocusListener, mPlayerHandler);
     }
 
+    public void next() {
+        mMusicPlayer.next(this, mAudioManager, mAudioFocusListener, mPlayerHandler, true);
+    }
+
     public boolean isPlaying() {
         return mMusicPlayer.isPlaying();
     }
@@ -201,6 +206,12 @@ public class MusicService extends Service {
         public void previous() throws RemoteException {
             if (mService.get() == null) return;
             mService.get().previous();
+        }
+
+        @Override
+        public void next() throws RemoteException {
+            if (mService.get() == null) return;
+            mService.get().next();
         }
 
         @Override

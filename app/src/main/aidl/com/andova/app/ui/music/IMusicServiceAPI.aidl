@@ -9,4 +9,5 @@ interface IMusicServiceAPI {
     void stop();
     void pause();
     void previous();
+    void next();
 }

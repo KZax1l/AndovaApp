@@ -28,6 +28,7 @@ class MusicPlayer {
     private ArrayList<MusicPlaybackTrack> mPlaylist = new ArrayList<>(100);
 
     private int mPlayPos = -1;
+    private int mNextPlayPos = -1;
     private String mFileToPlay;
     private long mLastPlayedTime;
     private boolean mIsSupposedToBePlaying = false;
@@ -92,6 +93,12 @@ class MusicPlayer {
         intent.putExtra(AudioEffect.EXTRA_PACKAGE_NAME, context.getPackageName());
         context.sendBroadcast(intent);
 
+        if (createNewNextTrack) {
+            setNextTrack(); //重新产生mNextPlayPos
+        } else {
+            setNextTrack(mNextPlayPos);//不重新产生mNextPlayPos
+        }
+
         if (mMediaTracker.isInitialized()) {
             mMediaTracker.start();
             handler.removeMessages(MEDIA_PLAYER_CODE_FADE_DOWN);
@@ -137,6 +144,30 @@ class MusicPlayer {
         }
     }
 
+    /**
+     * 切换到前一首歌曲
+     */
+    void previous(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler) {
+        synchronized (this) {
+            int pos = getPreviousPlayPosition();
+            if (pos < 0) return;
+            mNextPlayPos = mPlayPos;
+            mPlayPos = pos;
+            stop(false);
+            openCurrent(context);
+            play(context, audioManager, listener, handler, false); //不产生新的下首序号
+        }
+    }
+
+    /**
+     * 获取播放列表中的前一首歌曲
+     */
+    private int getPreviousPlayPosition() {
+        synchronized (this) {
+            return mPlayPos > 0 ? mPlayPos - 1 : mPlaylist.size() > 0 ? mPlaylist.size() - 1 : 0;
+        }
+    }
+
     boolean isPlaying() {
         return mIsSupposedToBePlaying;
     }
@@ -177,6 +208,10 @@ class MusicPlayer {
         }
 
         mPlaylist.addAll(position, arrayList);
+    }
+
+    private void openCurrent(Context context) {
+        openCurrentAndMaybeNext(context, false);
     }
 
     private void openCurrentAndNext(Context context) {
@@ -265,5 +300,31 @@ class MusicPlayer {
 
     void closeCursor() {
         mDataSource.closeCursor();
+    }
+
+    /**
+     * @param force 控制播放列表播放完时是否重新开始
+     * @return -1表示无法确定下一曲目位置
+     */
+    private int getNextPosition(final boolean force) {
+        return 0;
+    }
+
+    private void setNextTrack() {
+        setNextTrack(getNextPosition(false));
+    }
+
+    /**
+     * 设置下首播放曲目的位置,并设置{@link MediaPlayer}下次播放的DataSource
+     */
+    private void setNextTrack(int position) {
+        mNextPlayPos = position;
+        System.out.println("setNextTrack: next play position = " + mNextPlayPos);
+        if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
+            final long id = mPlaylist.get(mNextPlayPos).mId;
+            mMediaTracker.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
+        } else {
+            mMediaTracker.setNextDataSource(null);
+        }
     }
 }

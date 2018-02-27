@@ -128,6 +128,7 @@ public class MusicService extends Service {
             case BROADCAST_ACTION_NEXT:
                 break;
             case BROADCAST_ACTION_PREVIOUS:
+                previous();
                 break;
             case BROADCAST_ACTION_TOGGLE:
                 if (isPlaying()) {
@@ -165,6 +166,10 @@ public class MusicService extends Service {
             mMusicNotification.updateNotification(mNotificationManager, mDataSource);
     }
 
+    public void previous() {
+        mMusicPlayer.previous(this, mAudioManager, mAudioFocusListener, mPlayerHandler);
+    }
+
     public boolean isPlaying() {
         return mMusicPlayer.isPlaying();
     }
@@ -190,6 +195,12 @@ public class MusicService extends Service {
         public void pause() throws RemoteException {
             if (mService.get() == null) return;
             mService.get().pause();
+        }
+
+        @Override
+        public void previous() throws RemoteException {
+            if (mService.get() == null) return;
+            mService.get().previous();
         }
 
         @Override

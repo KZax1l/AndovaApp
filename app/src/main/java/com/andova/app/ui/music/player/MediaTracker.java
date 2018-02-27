@@ -62,7 +62,7 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
         return true;
     }
 
-    private void setNextDataSource(final String path) {
+    void setNextDataSource(final String path) {
         try {
             mCurrentMediaPlayer.setNextMediaPlayer(null);
         } catch (IllegalArgumentException e) {

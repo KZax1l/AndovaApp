@@ -437,6 +437,7 @@ public class MusicService extends Service {
             mPlayerHandler.sendEmptyMessage(MEDIA_PLAYER_ACTION_FADE_DOWN);
             if (!mIsSupposedToBePlaying) return;
             setIsSupposedToBePlaying(false, true);
+            updateNotification();
             TimerTask task = new TimerTask() {
                 public void run() {
                     final Intent intent = new Intent(
@@ -466,6 +467,7 @@ public class MusicService extends Service {
     private void setIsSupposedToBePlaying(boolean value, boolean notify) {
         if (mIsSupposedToBePlaying == value) return;
         mIsSupposedToBePlaying = value;
+        if (!mIsSupposedToBePlaying) mLastPlayedTime = System.currentTimeMillis();
     }
 
     /**

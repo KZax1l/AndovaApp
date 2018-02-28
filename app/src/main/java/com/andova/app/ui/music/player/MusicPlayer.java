@@ -1,11 +1,13 @@
 package com.andova.app.ui.music.player;
 
+import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.media.audiofx.AudioEffect;
 import android.net.Uri;
+import android.os.Build;
 import android.provider.MediaStore;
 
 import com.andova.app.ui.music.model.MusicPlaybackTrack;
@@ -46,7 +48,7 @@ class MusicPlayer {
      *
      * @param position -1标志随机播放
      */
-    void open(Context context, final long[] list, final int position, long sourceId) {
+    void open(Service context, final long[] list, final int position, long sourceId) {
         synchronized (this) {
             final int length = list.length;
             boolean isNewList = true;
@@ -71,10 +73,18 @@ class MusicPlayer {
      *
      * @param goToIdle 是否准备关闭Service
      */
-    private void stop(final boolean goToIdle) {
+    private void stop(Service service, final boolean goToIdle) {
         System.out.println("Stopping playback, goToIdle = " + goToIdle);
         if (mMediaTracker.isInitialized()) mMediaTracker.stop();
         mFileToPlay = null;
+        closeCursor();
+        if (goToIdle) {
+            setIsSupposedToBePlaying(false, false);
+        } else {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+                service.stopForeground(false);
+            else service.stopForeground(true);
+        }
     }
 
     /**
@@ -110,8 +120,8 @@ class MusicPlayer {
         return false;
     }
 
-    void stop() {
-        stop(true);
+    void stop(Service service) {
+        stop(service, true);
     }
 
     boolean play(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler) {
@@ -147,15 +157,15 @@ class MusicPlayer {
     /**
      * 切换到前一首歌曲
      */
-    void previous(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler) {
+    void previous(Service service, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler) {
         synchronized (this) {
             int pos = getPreviousPlayPosition();
             if (pos < 0) return;
             mNextPlayPos = mPlayPos;
             mPlayPos = pos;
-            stop(false);
-            openCurrent(context);
-            play(context, audioManager, listener, handler, false); //不产生新的下首序号
+            stop(service, false);
+            openCurrent(service);
+            play(service, audioManager, listener, handler, false); //不产生新的下首序号
         }
     }
 
@@ -164,8 +174,8 @@ class MusicPlayer {
      *
      * @param force 控制播放列表播放完时是否重新开始
      */
-    public void next(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener,
-                     MusicPlayerHandler handler, final boolean force) {
+    void next(Service service, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener,
+              MusicPlayerHandler handler, final boolean force) {
         System.out.println("Going to next track");
         synchronized (this) {
             if (mPlaylist.size() <= 0) {
@@ -185,10 +195,9 @@ class MusicPlayer {
                 return;
             }
 
-            stop(false);
             setAndRecordPlayPos(pos); //设置当前播放曲目的ID
-            openCurrentAndNext(context);
-            play(context, audioManager, listener, handler, true); //不重新产生mNextPlayPos
+            openCurrentAndNext(service);
+            play(service, audioManager, listener, handler, true); //不重新产生mNextPlayPos
         }
     }
 
@@ -252,12 +261,12 @@ class MusicPlayer {
         mPlaylist.addAll(position, arrayList);
     }
 
-    private void openCurrent(Context context) {
-        openCurrentAndMaybeNext(context, false);
+    private void openCurrent(Service service) {
+        openCurrentAndMaybeNext(service, false);
     }
 
-    private void openCurrentAndNext(Context context) {
-        openCurrentAndMaybeNext(context, true);
+    private void openCurrentAndNext(Service service) {
+        openCurrentAndMaybeNext(service, true);
     }
 
     /**
@@ -265,22 +274,21 @@ class MusicPlayer {
      *
      * @param openNext 是否给player提前设置下一首
      */
-    private void openCurrentAndMaybeNext(Context context, final boolean openNext) {
+    private void openCurrentAndMaybeNext(Service service, final boolean openNext) {
         synchronized (this) {
-            mDataSource.closeCursor();
+            if (mPlaylist.size() == 0) return;
+            stop(service, false);
 
-            if (mPlaylist.size() == 0) {
-                return;
-            }
-            stop(false);
-
-            mDataSource.updateCursor(context, mPlaylist.get(mPlayPos).mId);
+            mDataSource.updateCursor(service, mPlaylist.get(mPlayPos).mId);
             while (true) {
                 if (mDataSource.getAudioCursor() != null
-                        && openFile(context, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/"
+                        && openFile(service, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/"
                         + mDataSource.getAudioCursor().getLong(0))) { //如果成功读取当前曲目的信息,结束循环 设置player和fileToPlay
                     break;
                 }
+            }
+            if (openNext) { //提前设置好下一首曲目和预加载
+                setNextTrack();
             }
         }
     }

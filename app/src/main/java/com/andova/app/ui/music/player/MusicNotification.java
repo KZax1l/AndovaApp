@@ -17,10 +17,9 @@ import com.andova.app.Constants;
 import com.andova.app.R;
 import com.andova.app.ui.music.MusicActivity;
 import com.andova.app.util.MusicUtil;
-import com.bumptech.glide.Glide;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.lang.ref.WeakReference;
-import java.util.concurrent.ExecutionException;
 
 import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_NEXT;
 import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_PREVIOUS;
@@ -61,6 +60,7 @@ class MusicNotification {
         } else {
             newNotifyMode = NOTIFY_MODE_NONE;
         }
+        System.out.println("old notify mode:" + mNotifyMode + ",new notify mode:" + newNotifyMode);
 
         int notificationId = hashCode();
         if (mNotifyMode != newNotifyMode) {
@@ -98,23 +98,10 @@ class MusicNotification {
         nowPlayingIntent.setAction(Constants.NAVIGATE_ACTION_MUSIC);
         PendingIntent clickIntent = PendingIntent.getActivity(service, 0, nowPlayingIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        Bitmap artwork = null;
-        try {
-            artwork = Glide.with(service).asBitmap().load(MusicUtil.getAlbumArtUri(dataSource.getAlbumId())).submit().get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
+        Bitmap artwork = ImageLoader.getInstance().loadImageSync(MusicUtil.getAlbumArtUri(dataSource.getAlbumId()).toString());
 
         if (artwork == null) {
-            try {
-                artwork = Glide.with(service).asBitmap().load(R.mipmap.ic_album_default).submit().get();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            } catch (ExecutionException e) {
-                e.printStackTrace();
-            }
+            artwork = ImageLoader.getInstance().loadImageSync("drawable://" + R.mipmap.ic_album_default);
         }
 
         if (mNotificationPostTime == 0) {

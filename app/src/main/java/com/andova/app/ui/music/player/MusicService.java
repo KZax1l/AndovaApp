@@ -151,7 +151,7 @@ public class MusicService extends Service {
     }
 
     public void stop() {
-        mMusicPlayer.stop();
+        mMusicPlayer.stop(this);
     }
 
     public void play() {
@@ -169,10 +169,12 @@ public class MusicService extends Service {
 
     public void previous() {
         mMusicPlayer.previous(this, mAudioManager, mAudioFocusListener, mPlayerHandler);
+        mMusicNotification.updateNotification(mNotificationManager, mDataSource);
     }
 
     public void next() {
         mMusicPlayer.next(this, mAudioManager, mAudioFocusListener, mPlayerHandler, true);
+        mMusicNotification.updateNotification(mNotificationManager, mDataSource);
     }
 
     public boolean isPlaying() {

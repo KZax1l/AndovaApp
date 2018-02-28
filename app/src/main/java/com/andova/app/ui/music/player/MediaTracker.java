@@ -137,7 +137,6 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
         if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
             mCurrentMediaPlayer.release();
             mCurrentMediaPlayer = mNextMediaPlayer;
-            mNextMediaPlayer = null;
             mHandler.sendEmptyMessage(MEDIA_PLAYER_CODE_WENT_TO_NEXT);
         } else {
             mHandler.sendEmptyMessage(MEDIA_PLAYER_CODE_ENDED);

@@ -85,7 +85,7 @@ public class MusicService extends Service {
         mMediaTracker = new MediaTracker(this); // 当Player接收到播放状态相关的回调时,发送信息给Handler处理
         mMediaTracker.setHandler(mPlayerHandler);
 
-        mMusicPlayer = new MusicPlayer(mMediaTracker, mDataSource, mPlayerHandler);
+        mMusicPlayer = new MusicPlayer(this, mMediaTracker, mDataSource);
 
         mHandlerThread = new HandlerThread("MusicPlayerHandler", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
@@ -156,24 +156,27 @@ public class MusicService extends Service {
 
     public void play() {
         if (mMusicPlayer.play(this, mAudioManager, mAudioFocusListener, mPlayerHandler))
-            mMusicNotification.updateNotification(mNotificationManager, mDataSource);
+            updateNotification();
     }
 
     /**
      * 暂停播放
      */
     public void pause() {
-        if (mMusicPlayer.pause(this, mPlayerHandler))
-            mMusicNotification.updateNotification(mNotificationManager, mDataSource);
+        if (mMusicPlayer.pause(this, mPlayerHandler)) updateNotification();
     }
 
     public void previous() {
         mMusicPlayer.previous(this, mAudioManager, mAudioFocusListener, mPlayerHandler);
-        mMusicNotification.updateNotification(mNotificationManager, mDataSource);
+        updateNotification();
     }
 
     public void next() {
         mMusicPlayer.next(this, mAudioManager, mAudioFocusListener, mPlayerHandler, true);
+        updateNotification();
+    }
+
+    public void updateNotification() {
         mMusicNotification.updateNotification(mNotificationManager, mDataSource);
     }
 

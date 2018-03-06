@@ -80,7 +80,7 @@ class MusicPlayerHandler extends Handler {
                 case MEDIA_PLAYER_CODE_SERVER_DIED:
                     break;
                 case MEDIA_PLAYER_CODE_WENT_TO_NEXT:
-                    player.closeCursor();
+                    player.goToNext();
                     break;
                 case MEDIA_PLAYER_CODE_ENDED:
                     break;

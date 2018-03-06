@@ -35,12 +35,14 @@ class MusicPlayer {
     private long mLastPlayedTime;
     private boolean mIsSupposedToBePlaying = false;
 
+    private MusicService mService;
     private MediaTracker mMediaTracker;
     private MediaDataSource mDataSource;
 
-    MusicPlayer(MediaTracker mediaTracker, MediaDataSource dataSource, MusicPlayerHandler handler) {
-        mMediaTracker = mediaTracker;
+    MusicPlayer(MusicService service, MediaTracker mediaTracker, MediaDataSource dataSource) {
+        mService = service;
         mDataSource = dataSource;
+        mMediaTracker = mediaTracker;
     }
 
     /**
@@ -376,5 +378,15 @@ class MusicPlayer {
         } else {
             mMediaTracker.setNextDataSource(null);
         }
+    }
+
+    /**
+     * 当前曲目播完，准备播放下一首
+     */
+    void goToNext() {
+        setAndRecordPlayPos(mNextPlayPos);
+        setNextTrack();
+        mDataSource.updateCursor(mService, mPlaylist.get(mPlayPos).mId);
+        mService.updateNotification();
     }
 }

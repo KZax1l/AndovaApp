@@ -7,6 +7,8 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
+import darks.log.Logger;
+
 /**
  * Created by Administrator on 2018-02-28.
  *
@@ -15,12 +17,15 @@ import com.squareup.leakcanary.RefWatcher;
  */
 public class AndovaApplication extends Application {
     private RefWatcher refWatcher;
+    public static Logger LOGGER;
 
     @Override
     public void onCreate() {
         super.onCreate();
         initImageLoader();
         refWatcher = setupLeakCanary();
+        Logger.Android.setApplication(this);
+        LOGGER = Logger.getLogger(AndovaApplication.class);
     }
 
     private void initImageLoader() {

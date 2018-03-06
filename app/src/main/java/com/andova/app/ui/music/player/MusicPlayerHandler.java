@@ -7,6 +7,8 @@ import android.os.Message;
 
 import java.lang.ref.WeakReference;
 
+import static com.andova.app.AndovaApplication.LOGGER;
+
 /**
  * Created by Administrator on 2018-02-27.
  * 处理音量调节,播放切换,WakeLock,音频焦点等事件
@@ -55,7 +57,10 @@ class MusicPlayerHandler extends Handler {
     @Override
     public void handleMessage(final Message msg) {
         final MusicPlayer player = mWeakReferencePlayer.get();
-        if (player == null) return;
+        if (player == null) {
+            LOGGER.info("MusicPlayer is null");
+            return;
+        }
 
         synchronized (player) {
             switch (msg.what) {
@@ -87,7 +92,7 @@ class MusicPlayerHandler extends Handler {
                 case MEDIA_PLAYER_CODE_RELEASE_WAKELOCK:
                     break;
                 case MEDIA_PLAYER_CODE_FOCUS_CHANGED:
-                    System.out.println("Received audio focus change event " + msg.arg1);
+                    LOGGER.info("Received audio focus change event " + msg.arg1);
                     break;
                 default:
                     break;

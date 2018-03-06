@@ -14,6 +14,7 @@ import com.andova.app.ui.music.IMusicServiceAPI;
 
 import java.lang.ref.WeakReference;
 
+import static com.andova.app.AndovaApplication.LOGGER;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FOCUS_CHANGED;
 
 /**
@@ -59,7 +60,7 @@ public class MusicService extends Service {
 
     @Override
     public boolean onUnbind(final Intent intent) {
-        System.out.println("Service unbound");
+        LOGGER.info("Service unbound");
         mServiceInUse = false;
 
         if (isPlaying()) return true;
@@ -74,7 +75,7 @@ public class MusicService extends Service {
 
     @Override
     public void onCreate() {
-        System.out.println("Creating service");
+        LOGGER.info("Creating service");
         super.onCreate();
 
         mNotificationManager = NotificationManagerCompat.from(this);
@@ -95,7 +96,7 @@ public class MusicService extends Service {
 
     @Override
     public void onDestroy() {
-        System.out.println("Destroying service");
+        LOGGER.info("Destroying service");
         super.onDestroy();
 
         mPlayerHandler.removeCallbacksAndMessages(null);
@@ -109,7 +110,7 @@ public class MusicService extends Service {
 
     @Override
     public int onStartCommand(final Intent intent, final int flags, final int startId) {
-        System.out.println("Got new intent " + intent + ", startId = " + startId);
+        LOGGER.info("Got new intent " + intent + ", startId = " + startId);
         mServiceStartId = startId;
 
         if (intent != null) handleCommandIntent(intent);
@@ -122,7 +123,7 @@ public class MusicService extends Service {
      */
     private void handleCommandIntent(Intent intent) {
         final String action = intent.getAction();
-        System.out.println("handleCommandIntent ->action:" + action);
+        LOGGER.info("Action:" + action);
         if (TextUtils.isEmpty(action)) return;
         switch (action) {
             case BROADCAST_ACTION_NEXT:

@@ -10,6 +10,7 @@ import android.os.PowerManager;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 
+import static com.andova.app.AndovaApplication.LOGGER;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_ENDED;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_RELEASE_WAKELOCK;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_WENT_TO_NEXT;
@@ -66,9 +67,9 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
         try {
             mCurrentMediaPlayer.setNextMediaPlayer(null);
         } catch (IllegalArgumentException e) {
-            System.out.println("Next media player is current one, continuing");
+            LOGGER.info("Next media player is current one, continuing");
         } catch (IllegalStateException e) {
-            System.out.println("Media player not initialized!");
+            LOGGER.info("Media player not initialized!");
             return;
         }
         if (mNextMediaPlayer != null) {
@@ -127,13 +128,13 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
 
     @Override
     public boolean onError(final MediaPlayer mp, final int what, final int extra) {
-        System.out.println("Music Server Error what: " + what + " extra: " + extra);
+        LOGGER.info("Music Server Error what: " + what + " extra: " + extra);
         return false;
     }
 
     @Override
     public void onCompletion(final MediaPlayer mp) {
-        System.out.println("Media Player Completion");
+        LOGGER.info("Media Player Completion");
         if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
             mCurrentMediaPlayer.release();
             mCurrentMediaPlayer = mNextMediaPlayer;

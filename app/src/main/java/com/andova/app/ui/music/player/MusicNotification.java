@@ -21,6 +21,7 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.lang.ref.WeakReference;
 
+import static com.andova.app.AndovaApplication.LOGGER;
 import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_NEXT;
 import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_PREVIOUS;
 import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_TOGGLE;
@@ -60,7 +61,7 @@ class MusicNotification {
         } else {
             newNotifyMode = NOTIFY_MODE_NONE;
         }
-        System.out.println("old notify mode:" + mNotifyMode + ",new notify mode:" + newNotifyMode);
+        LOGGER.info("Old notify mode:" + mNotifyMode + ",new notify mode:" + newNotifyMode);
 
         int notificationId = hashCode();
         if (mNotifyMode != newNotifyMode) {

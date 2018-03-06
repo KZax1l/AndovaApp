@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.andova.app.AndovaApplication.LOGGER;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_DOWN;
 import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_UP;
 
@@ -76,7 +77,7 @@ class MusicPlayer {
      * @param goToIdle 是否准备关闭Service
      */
     private void stop(Service service, final boolean goToIdle) {
-        System.out.println("Stopping playback, goToIdle = " + goToIdle);
+        LOGGER.info("Stopping playback, goToIdle = " + goToIdle);
         if (mMediaTracker.isInitialized()) mMediaTracker.stop();
         mFileToPlay = null;
         closeCursor();
@@ -97,7 +98,7 @@ class MusicPlayer {
     private boolean play(Context context, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener, MusicPlayerHandler handler, boolean createNewNextTrack) {
         int status = audioManager.requestAudioFocus(listener, AudioManager.STREAM_MUSIC, AudioManager.AUDIOFOCUS_GAIN);
 
-        System.out.println("Starting playback: audio focus request status = " + status);
+        LOGGER.info("Starting playback: audio focus request status = " + status);
 
         if (status != AudioManager.AUDIOFOCUS_REQUEST_GRANTED) return false;
 
@@ -134,7 +135,7 @@ class MusicPlayer {
      * 暂停播放
      */
     boolean pause(final Context context, MusicPlayerHandler handler) {
-        System.out.println("Pausing playback");
+        LOGGER.info("Pausing playback");
         synchronized (this) {
             handler.removeMessages(MEDIA_PLAYER_CODE_FADE_UP);
             handler.sendEmptyMessage(MEDIA_PLAYER_CODE_FADE_DOWN);
@@ -178,10 +179,10 @@ class MusicPlayer {
      */
     void next(Service service, AudioManager audioManager, AudioManager.OnAudioFocusChangeListener listener,
               MusicPlayerHandler handler, final boolean force) {
-        System.out.println("Going to next track");
+        LOGGER.info("Going to next track");
         synchronized (this) {
             if (mPlaylist.size() <= 0) {
-                System.out.println("No play queue");
+                LOGGER.info("No play queue");
                 return;
             }
             int pos;
@@ -299,7 +300,7 @@ class MusicPlayer {
      * 根据path通过多种方式来获取歌曲的信息,初始化player
      */
     private boolean openFile(Context context, final String path) {
-        System.out.println("openFile: path = " + path);
+        LOGGER.info("path = " + path);
         synchronized (this) {
             if (path == null) return false;
 
@@ -371,7 +372,7 @@ class MusicPlayer {
      */
     private void setNextTrack(int position) {
         mNextPlayPos = position;
-        System.out.println("setNextTrack: next play position = " + mNextPlayPos);
+        LOGGER.info("Next play position = " + mNextPlayPos);
         if (mNextPlayPos >= 0 && mPlaylist != null && mNextPlayPos < mPlaylist.size()) {
             final long id = mPlaylist.get(mNextPlayPos).mId;
             mMediaTracker.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
@@ -384,6 +385,7 @@ class MusicPlayer {
      * 当前曲目播完，准备播放下一首
      */
     void goToNext() {
+        LOGGER.info("Go to next music");
         setAndRecordPlayPos(mNextPlayPos);
         setNextTrack();
         mDataSource.updateCursor(mService, mPlaylist.get(mPlayPos).mId);

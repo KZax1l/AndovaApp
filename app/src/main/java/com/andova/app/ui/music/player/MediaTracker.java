@@ -77,6 +77,7 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
             mNextMediaPlayer = null;
         }
         if (path == null) {
+            LOGGER.info("Want to set next data source,but the path is null");
             return;
         }
         mNextMediaPlayer = new MediaPlayer();
@@ -138,6 +139,7 @@ class MediaTracker implements MediaPlayer.OnErrorListener, MediaPlayer.OnComplet
         if (mp == mCurrentMediaPlayer && mNextMediaPlayer != null) {
             mCurrentMediaPlayer.release();
             mCurrentMediaPlayer = mNextMediaPlayer;
+            mNextMediaPlayer = null;
             mHandler.sendEmptyMessage(MEDIA_PLAYER_CODE_WENT_TO_NEXT);
         } else {
             mHandler.sendEmptyMessage(MEDIA_PLAYER_CODE_ENDED);

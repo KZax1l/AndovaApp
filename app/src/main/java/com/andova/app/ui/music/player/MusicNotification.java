@@ -52,7 +52,10 @@ class MusicNotification {
      */
     void updateNotification(NotificationManagerCompat notificationManager, MediaDataSource dataSource) {
         final MusicService service = mWeakRefService.get();
-        if (service == null) return;
+        if (service == null) {
+            LOGGER.info("MusicService is null");
+            return;
+        }
         final int newNotifyMode;
         if (service.isPlaying()) {
             newNotifyMode = NOTIFY_MODE_FOREGROUND;

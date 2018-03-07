@@ -84,7 +84,6 @@ public class MusicService extends Service {
         mAudioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mMediaTracker = new MediaTracker(this); // 当Player接收到播放状态相关的回调时,发送信息给Handler处理
-        mMediaTracker.setHandler(mPlayerHandler);
 
         mMusicPlayer = new MusicPlayer(this, mMediaTracker, mDataSource);
 
@@ -92,6 +91,7 @@ public class MusicService extends Service {
         mHandlerThread.start();
 
         mPlayerHandler = new MusicPlayerHandler(mMusicPlayer, mHandlerThread.getLooper()); // 处理播放状态相关
+        mMediaTracker.setHandler(mPlayerHandler);
     }
 
     @Override

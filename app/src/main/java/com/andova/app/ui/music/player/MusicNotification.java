@@ -79,7 +79,8 @@ class MusicNotification {
         if (newNotifyMode == NOTIFY_MODE_FOREGROUND) {
             service.startForeground(notificationId, buildNotification(dataSource));
         } else if (newNotifyMode == NOTIFY_MODE_BACKGROUND) {
-            notificationManager.notify(notificationId, buildNotification(dataSource));
+            Notification notification = buildNotification(dataSource);
+            if (notification != null) notificationManager.notify(notificationId, notification);
         }
 
         mNotifyMode = newNotifyMode;
@@ -131,7 +132,7 @@ class MusicNotification {
             builder.setVisibility(Notification.VISIBILITY_PUBLIC);
             android.support.v4.media.app.NotificationCompat.MediaStyle style =
                     new android.support.v4.media.app.NotificationCompat.MediaStyle()
-                            .setShowActionsInCompactView(0, 1, 2, 3);
+                            .setShowActionsInCompactView(0, 1, 2);
             builder.setStyle(style);
         }
         if (artwork != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {

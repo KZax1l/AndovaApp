@@ -7,7 +7,7 @@ import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
-import darks.log.Logger;
+import dark.log.Logger;
 
 /**
  * Created by Administrator on 2018-02-28.

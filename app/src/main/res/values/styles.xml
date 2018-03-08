@@ -69,13 +69,22 @@
 
     <style name="AndovaAPP.Widget.CollapsingToolbarLayout">
         <item name="expandedTitleTextAppearance">
-            @style/AndovaAPP.TextAppearance.CollapsingToolbarLayout
+            @style/AndovaAPP.TextAppearance.CollapsingToolbarLayout.Expanded
+        </item>
+        <item name="collapsedTitleTextAppearance">
+            @style/AndovaAPP.TextAppearance.CollapsingToolbarLayout.Collapsed
         </item>
     </style>
 
     <style name="AndovaAPP.TextAppearance" />
 
-    <style name="AndovaAPP.TextAppearance.CollapsingToolbarLayout">
+    <style name="AndovaAPP.TextAppearance.CollapsingToolbarLayout" />
+
+    <style name="AndovaAPP.TextAppearance.CollapsingToolbarLayout.Expanded">
+        <item name="android:textColor">@color/colorToolbar</item>
+    </style>
+
+    <style name="AndovaAPP.TextAppearance.CollapsingToolbarLayout.Collapsed">
         <item name="android:textColor">@color/colorWhite</item>
     </style>
 </resources>

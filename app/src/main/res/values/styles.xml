@@ -19,6 +19,10 @@
         <item name="titleTextColor">@color/colorWhite</item>
     </style>
 
+    <style name="AndovaAPP.Widget.Toolbar.NoBackground">
+        <item name="android:background">@null</item>
+    </style>
+
     <style name="AndovaAPP.Widget.TabLayout">
         <item name="tabGravity">center</item>
         <item name="tabMode">fixed</item>
@@ -61,5 +65,17 @@
         <item name="android:singleLine">true</item>
         <item name="android:includeFontPadding">false</item>
         <item name="android:lineSpacingExtra">0.0px</item>
+    </style>
+
+    <style name="AndovaAPP.Widget.CollapsingToolbarLayout">
+        <item name="expandedTitleTextAppearance">
+            @style/AndovaAPP.TextAppearance.CollapsingToolbarLayout
+        </item>
+    </style>
+
+    <style name="AndovaAPP.TextAppearance" />
+
+    <style name="AndovaAPP.TextAppearance.CollapsingToolbarLayout">
+        <item name="android:textColor">@color/colorWhite</item>
     </style>
 </resources>

@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.fragment;
+package com.andova.app.music.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -13,10 +13,10 @@ import android.view.ViewGroup;
 
 import com.andova.app.Constants;
 import com.andova.app.R;
-import com.andova.app.ui.music.adapter.SongListAdapter;
-import com.andova.app.ui.music.decoration.DividerDecoration;
-import com.andova.app.ui.music.loader.SongLoader;
-import com.andova.app.ui.music.model.Song;
+import com.andova.app.music.adapter.SongListAdapter;
+import com.andova.app.music.decoration.DividerDecoration;
+import com.andova.app.music.loader.SongLoader;
+import com.andova.app.music.model.Song;
 
 import java.util.List;
 

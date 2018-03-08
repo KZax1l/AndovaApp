@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.model;
+package com.andova.app.music.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;

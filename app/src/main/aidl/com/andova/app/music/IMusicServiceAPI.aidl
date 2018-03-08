@@ -1,5 +1,5 @@
 // IMusicServiceAPI.aidl
-package com.andova.app.ui.music;
+package com.andova.app.music;
 
 // Declare any non-default types here with import statements
 

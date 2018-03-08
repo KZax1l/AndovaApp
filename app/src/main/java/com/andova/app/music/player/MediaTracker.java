@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.player;
+package com.andova.app.music.player;
 
 import android.content.Context;
 import android.media.AudioManager;
@@ -11,9 +11,9 @@ import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 import static com.andova.app.AndovaApplication.LOGGER;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_ENDED;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_RELEASE_WAKELOCK;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_WENT_TO_NEXT;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_ENDED;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_RELEASE_WAKELOCK;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_WENT_TO_NEXT;
 
 /**
  * Created by Administrator on 2018-02-27.

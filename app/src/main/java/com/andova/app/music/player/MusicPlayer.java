@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.player;
+package com.andova.app.music.player;
 
 import android.app.Service;
 import android.content.Context;
@@ -10,15 +10,15 @@ import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
 
-import com.andova.app.ui.music.model.MusicPlaybackTrack;
+import com.andova.app.music.model.MusicPlaybackTrack;
 
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.andova.app.AndovaApplication.LOGGER;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_DOWN;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_UP;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_DOWN;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FADE_UP;
 
 /**
  * Created by Administrator on 2018-02-27.

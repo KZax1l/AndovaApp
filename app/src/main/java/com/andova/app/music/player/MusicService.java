@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.player;
+package com.andova.app.music.player;
 
 import android.app.Service;
 import android.content.Context;
@@ -10,12 +10,12 @@ import android.os.RemoteException;
 import android.support.v4.app.NotificationManagerCompat;
 import android.text.TextUtils;
 
-import com.andova.app.ui.music.IMusicServiceAPI;
+import com.andova.app.music.IMusicServiceAPI;
 
 import java.lang.ref.WeakReference;
 
 import static com.andova.app.AndovaApplication.LOGGER;
-import static com.andova.app.ui.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FOCUS_CHANGED;
+import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_FOCUS_CHANGED;
 
 /**
  * Created by Administrator on 2018-02-24.

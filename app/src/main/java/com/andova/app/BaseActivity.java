@@ -1,4 +1,4 @@
-package com.andova.app.ui;
+package com.andova.app;
 
 import android.support.v7.app.AppCompatActivity;
 

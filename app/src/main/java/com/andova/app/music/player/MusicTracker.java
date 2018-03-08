@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.player;
+package com.andova.app.music.player;
 
 import android.app.Activity;
 import android.content.ComponentName;
@@ -9,7 +9,7 @@ import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
 
-import com.andova.app.ui.music.IMusicServiceAPI;
+import com.andova.app.music.IMusicServiceAPI;
 
 import java.util.WeakHashMap;
 

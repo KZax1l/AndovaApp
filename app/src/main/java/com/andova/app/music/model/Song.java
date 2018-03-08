@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.model;
+package com.andova.app.music.model;
 
 /**
  * Created by Administrator on 2018-02-23.

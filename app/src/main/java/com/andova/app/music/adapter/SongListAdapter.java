@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.adapter;
+package com.andova.app.music.adapter;
 
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -11,8 +11,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.andova.app.R;
-import com.andova.app.ui.music.model.Song;
-import com.andova.app.ui.music.player.MusicTracker;
+import com.andova.app.music.model.Song;
+import com.andova.app.music.player.MusicTracker;
 import com.andova.app.util.DensityUtil;
 import com.andova.app.util.MusicUtil;
 import com.bumptech.glide.Glide;

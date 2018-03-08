@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.player;
+package com.andova.app.music.player;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -15,16 +15,16 @@ import android.text.TextUtils;
 
 import com.andova.app.Constants;
 import com.andova.app.R;
-import com.andova.app.ui.music.MusicActivity;
+import com.andova.app.music.MusicActivity;
 import com.andova.app.util.MusicUtil;
 import com.nostra13.universalimageloader.core.ImageLoader;
 
 import java.lang.ref.WeakReference;
 
 import static com.andova.app.AndovaApplication.LOGGER;
-import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_NEXT;
-import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_PREVIOUS;
-import static com.andova.app.ui.music.player.MusicService.BROADCAST_ACTION_TOGGLE;
+import static com.andova.app.music.player.MusicService.BROADCAST_ACTION_NEXT;
+import static com.andova.app.music.player.MusicService.BROADCAST_ACTION_PREVIOUS;
+import static com.andova.app.music.player.MusicService.BROADCAST_ACTION_TOGGLE;
 
 /**
  * Created by Administrator on 2018-02-27.

@@ -1,4 +1,4 @@
-package com.andova.app.ui.music;
+package com.andova.app.music;
 
 import android.content.ComponentName;
 import android.content.ServiceConnection;
@@ -11,11 +11,11 @@ import android.support.v4.app.Fragment;
 
 import com.andova.app.Constants;
 import com.andova.app.R;
-import com.andova.app.ui.BaseActivity;
-import com.andova.app.ui.music.fragment.MainFragment;
-import com.andova.app.ui.music.player.MusicTracker;
+import com.andova.app.BaseActivity;
+import com.andova.app.music.fragment.MainFragment;
+import com.andova.app.music.player.MusicTracker;
 
-import static com.andova.app.ui.music.player.MusicTracker.sService;
+import static com.andova.app.music.player.MusicTracker.sService;
 
 /**
  * Created by Administrator on 2018-02-23.

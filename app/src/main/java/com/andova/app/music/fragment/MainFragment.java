@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.fragment;
+package com.andova.app.music.fragment;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;

@@ -1,11 +1,11 @@
-package com.andova.app.ui.music.loader;
+package com.andova.app.music.loader;
 
 import android.content.Context;
 import android.database.Cursor;
 import android.provider.MediaStore;
 import android.text.TextUtils;
 
-import com.andova.app.ui.music.model.Song;
+import com.andova.app.music.model.Song;
 
 import java.util.ArrayList;
 import java.util.List;

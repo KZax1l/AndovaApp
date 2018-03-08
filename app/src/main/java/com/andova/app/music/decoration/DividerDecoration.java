@@ -1,4 +1,4 @@
-package com.andova.app.ui.music.decoration;
+package com.andova.app.music.decoration;
 
 import android.content.Context;
 import android.content.res.TypedArray;

@@ -24,9 +24,9 @@ import static com.andova.app.music.player.MusicPlayerHandler.MEDIA_PLAYER_CODE_F
  * @since 1.0.0
  */
 public class MusicService extends Service {
-    public static final String BROADCAST_ACTION_PREVIOUS = "com.andova.app.ui.music.player.MusicService.PREVIOUS";
-    public static final String BROADCAST_ACTION_TOGGLE = "com.andova.app.ui.music.player.MusicService.TOGGLE";
-    public static final String BROADCAST_ACTION_NEXT = "com.andova.app.ui.music.player.MusicService.NEXT";
+    public static final String BROADCAST_ACTION_NEXT = "com.andova.app.music.player.MusicService.NEXT";
+    public static final String BROADCAST_ACTION_TOGGLE = "com.andova.app.music.player.MusicService.TOGGLE";
+    public static final String BROADCAST_ACTION_PREVIOUS = "com.andova.app.music.player.MusicService.PREVIOUS";
 
     private int mServiceStartId = -1;
     private boolean mServiceInUse = false;

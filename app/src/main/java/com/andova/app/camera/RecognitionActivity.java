@@ -11,6 +11,7 @@ import com.andova.fdt.camera.CameraPreview;
 import com.andova.fdt.camera.DetectorData;
 import com.andova.fdt.camera.DetectorProxy;
 import com.andova.fdt.camera.FaceRectView;
+import com.andova.fdt.camera.ICameraCheckListener;
 import com.andova.fdt.camera.IDataListener;
 import com.andova.fdt.camera.NormalFaceDetector;
 
@@ -39,14 +40,27 @@ public class RecognitionActivity extends BaseActivity {
                 System.out.println("线程：" + Thread.currentThread().getName() + "，识别数据:" + detectorData);
             }
         };
+        ICameraCheckListener mCameraCheckListener = new ICameraCheckListener() {
+            @Override
+            public void checkPermission(boolean isAllow) {
+                //权限是否允许
+                System.out.println("checkPermission:" + isAllow);
+            }
+
+            @Override
+            public void checkPixels(long pixels, boolean isSupport) {
+                //手机像素是否满足要求
+                System.out.println("checkPixels:" + pixels);
+            }
+        };
         //创建代理类，必须传入相机预览界面
         mDetectorProxy = new DetectorProxy.Builder((CameraPreview) findViewById(R.id.camera_preview))
-                //设置权限检查监听
-                .setCheckListener(null)
                 //设置人脸检测实现
                 .setFaceDetector(new NormalFaceDetector())
                 //设置检测数据回调监听
                 .setDataListener(mDataListener)
+                //设置权限检查监听
+                .setCheckListener(mCameraCheckListener)
                 //设置绘制人脸识别框界面
                 .setFaceRectView((FaceRectView) findViewById(R.id.face_rect_view))
                 //设置是否绘制人脸检测框

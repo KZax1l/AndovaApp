@@ -35,7 +35,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private ICameraCheckListener mCheckListener;
     private IFaceDetector mFaceDetector;
     private int mDisplayOrientation;
+    /**
+     * 用来预览的宽度，如果是横屏，宽度值较高度值大，若是竖屏，宽度值较高度值小
+     */
     private int mCameraWidth;
+    /**
+     * 用来预览的高度（即如果展示了系统状态栏、系统底部导航栏，则要减去这些显示部分的高度值）
+     */
     private int mCameraHeight;
 
     public CameraPreview(Context context) {
@@ -132,16 +138,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             //获取最大宽高，得出最大支持像素
             Camera.Parameters parameters = mCamera.getParameters();
+            // 获取相机支持的所有图片尺寸
             List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
-            long pixels;
-            if (pictureSizeList.get(0).height < pictureSizeList.get(pictureSizeList.size() - 1).height) {
-                pixels = pictureSizeList.get(pictureSizeList.size() - 1).width * pictureSizeList.get(pictureSizeList.size() - 1).height;
-            } else {
-                pixels = pictureSizeList.get(0).width * pictureSizeList.get(0).height;
+            long pixels = 0L;
+            for (Camera.Size size : pictureSizeList) {
+                if (pixels >= size.width * size.height) continue;
+                pixels = size.width * size.height;
             }
-            //回调该手机像素值
+            // 回调该手机像素值
             if (mCheckListener != null) {
-                if (pixels > 300 * 10000) {
+                if (pixels > 300 * 10000) {// 默认要求手机配置不低于300万像素
                     mCheckListener.checkPixels(pixels, true);
                 } else {
                     mCheckListener.checkPixels(pixels, false);
@@ -252,6 +258,9 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     /**
      * 在摄像头启动前设置参数
+     *
+     * @param width  see {@link #mCameraWidth}
+     * @param height see {@link #mCameraHeight}
      */
     private void setCameraParams(Camera camera, int width, int height) {
         // 获取摄像头支持的pictureSize列表

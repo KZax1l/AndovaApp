@@ -89,6 +89,12 @@ class FaceUtil {
 
     /**
      * 找出最适合的分辨率
+     *
+     * @param screenResolution ({@link CameraPreview#mCameraWidth},{@link CameraPreview#mCameraHeight})
+     * @param maxDistortion    一般地，竖屏情况下，相机预览界面的标准长宽比为4:3或16:9（这里暂不考虑全面屏的情况），
+     *                         当然，为了方便计算，这里换成宽长比，即标准宽长比为3:4或9:16，这两个标准差值为0.1925，
+     *                         由于实际预览页面可能要减去额外控件的高度（如系统状态栏、系统底部导航栏等），
+     *                         只要实际预览页面的宽高比介于这两个标准值之间就判定通过
      */
     static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
         Point defaultResolution = new Point();
@@ -111,6 +117,7 @@ class FaceUtil {
         Collections.sort(supportedResolutions, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size a, Camera.Size b) {
+                // 根据第一个参数(这里的a)小于、等于或大于第二个参数(这里的b)分别返回负整数、零或正整数（从小到大排列的情况）
                 int aPixels = a.height * a.width;
                 int bPixels = b.height * b.width;
                 if (bPixels < aPixels) {
@@ -123,16 +130,16 @@ class FaceUtil {
             }
         });
 
-        // 移除不符合条件的分辨率
         double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
         Iterator<Camera.Size> it = supportedResolutions.iterator();
+        // 移除不符合条件的分辨率
         while (it.hasNext()) {
             Camera.Size supportedResolution = it.next();
             int width = supportedResolution.width;
             int height = supportedResolution.height;
             // 移除低于下限的分辨率，尽可能取高分辨率
             if (isPictureSize) {
-                if (width * height < 2000 * 1500) {
+                if (width * height < 2000 * 1500) {// 低于三百万像素移除
                     it.remove();
                     continue;
                 }
@@ -143,14 +150,14 @@ class FaceUtil {
                 }
             }
 
-            /**
+            /*
              * 在camera分辨率与屏幕分辨率宽高比不相等的情况下，找出差距最小的一组分辨率
              * 由于camera的分辨率是width>height，我们设置的portrait模式中，width<height
-             * 因此这里要先交换然preview宽高比后在比较
+             * 因此这里要先交换然preview宽高比后再比较
              */
-            boolean isCandidatePortrait = width > height;
-            int maybeFlippedWidth = isCandidatePortrait ? height : width;
-            int maybeFlippedHeight = isCandidatePortrait ? width : height;
+            boolean isCandidatePortrait = width > height;// true代表横屏
+            int maybeFlippedWidth = isCandidatePortrait ? height : width;// 竖屏所对应的宽度值
+            int maybeFlippedHeight = isCandidatePortrait ? width : height;// 竖屏所对应的高度值
             double aspectRatio = (double) maybeFlippedWidth / (double) maybeFlippedHeight;
             double distortion = Math.abs(aspectRatio - screenAspectRatio);
             if (distortion > maxDistortion) {

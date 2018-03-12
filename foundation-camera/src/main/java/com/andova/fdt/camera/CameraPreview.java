@@ -138,7 +138,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             //获取最大宽高，得出最大支持像素
             Camera.Parameters parameters = mCamera.getParameters();
-            // 获取相机支持的所有图片尺寸
+            // 获取横屏模式下摄像头支持的PictureSize列表
             List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
             long pixels = 0L;
             for (Camera.Size size : pictureSizeList) {
@@ -265,13 +265,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private void setCameraParams(Camera camera, int width, int height) {
         // 获取摄像头支持的pictureSize列表
         Camera.Parameters parameters = camera.getParameters();
+        // 获取横屏模式下摄像头支持的PictureSize列表
         List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
         // 从列表中选择合适的分辨率
         Point pictureSize = FaceUtil.findBestResolution(pictureSizeList, new Point(width, height), true, 0.15f);
         // 根据选出的PictureSize重新设置SurfaceView大小
         parameters.setPictureSize(pictureSize.x, pictureSize.y);
 
-        // 获取摄像头支持的PreviewSize列表
+        // 获取横屏模式下摄像头支持的PreviewSize列表
         List<Camera.Size> previewSizeList = parameters.getSupportedPreviewSizes();
         Point preSize = FaceUtil.findBestResolution(previewSizeList, new Point(width, height), false, 0.15f);
         parameters.setPreviewSize(preSize.x, preSize.y);
@@ -279,6 +280,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         float w = preSize.x;
         float h = preSize.y;
         float scale = 1.0f;
+
+        boolean isCandidatePortrait = w > h;// true代表横屏
+        float maybeFlippedWidth = isCandidatePortrait ? h : w;// 竖屏所对应的宽度值，较小值
+        float maybeFlippedHeight = isCandidatePortrait ? w : h;// 竖屏所对应的高度值，较大值
+
+        /**
+         * 由于{@link pictureSizeList}和{@link previewSizeList}获取的是系统返回的横屏模式下的数据，
+         * 所以宽度值较高度值大
+         */
         int tempW = (int) (height * (h / w));
         int tempH = (int) (width * (w / h));
         if (tempW >= width) {
@@ -292,8 +302,8 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         if (mFaceDetector != null) {
             mFaceDetector.setZoomRatio(5f * scale);
-            mFaceDetector.setPreviewWidth((int) w);
-            mFaceDetector.setPreviewHeight((int) h);
+            mFaceDetector.setPreviewWidth((int) h);
+            mFaceDetector.setPreviewHeight((int) w);
         }
 
         parameters.setJpegQuality(100);

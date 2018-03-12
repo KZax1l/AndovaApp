@@ -90,6 +90,7 @@ class FaceUtil {
     /**
      * 找出最适合的分辨率
      *
+     * @param cameraSizes      系统返回的横屏模式下的相机尺寸列表，即宽度值较高度值大
      * @param screenResolution ({@link CameraPreview#mCameraWidth},{@link CameraPreview#mCameraHeight})
      * @param maxDistortion    一般地，竖屏情况下，相机预览界面的标准长宽比为4:3或16:9（这里暂不考虑全面屏的情况），
      *                         当然，为了方便计算，这里换成宽长比，即标准宽长比为3:4或9:16，这两个标准差值为0.1925，
@@ -156,8 +157,8 @@ class FaceUtil {
              * 因此这里要先交换然preview宽高比后再比较
              */
             boolean isCandidatePortrait = width > height;// true代表横屏
-            int maybeFlippedWidth = isCandidatePortrait ? height : width;// 竖屏所对应的宽度值
-            int maybeFlippedHeight = isCandidatePortrait ? width : height;// 竖屏所对应的高度值
+            int maybeFlippedWidth = isCandidatePortrait ? height : width;// 竖屏所对应的宽度值，较小值
+            int maybeFlippedHeight = isCandidatePortrait ? width : height;// 竖屏所对应的高度值，较大值
             double aspectRatio = (double) maybeFlippedWidth / (double) maybeFlippedHeight;
             double distortion = Math.abs(aspectRatio - screenAspectRatio);
             if (distortion > maxDistortion) {

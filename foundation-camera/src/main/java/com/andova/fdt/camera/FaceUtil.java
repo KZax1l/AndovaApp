@@ -20,10 +20,10 @@ import java.util.List;
  * @author kzaxil
  * @since 1.0.0
  */
-public class FaceUtil {
+class FaceUtil {
     private static final String TAG = FaceUtil.class.getSimpleName();
 
-    public static int getYUVLight(byte[] data, Rect rect, int width) {
+    static int getYUVLight(byte[] data, Rect rect, int width) {
         if (data == null || rect == null) {
             return 0;
         }
@@ -50,7 +50,7 @@ public class FaceUtil {
         return sum / index;
     }
 
-    public static void drawFaceRect(Canvas canvas, Rect rect, int rectColor, int width, boolean frontCamera, boolean drawRect) {
+    static void drawFaceRect(Canvas canvas, Rect rect, int rectColor, int width, boolean frontCamera, boolean drawRect) {
         if (canvas == null) {
             return;
         }
@@ -89,15 +89,15 @@ public class FaceUtil {
 
     /**
      * 找出最适合的分辨率
-     *
-     * @return
      */
-    public static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
+    static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
         Point defaultResolution = new Point();
         if (isPictureSize) {
+            /* 长宽比为4:3 */
             defaultResolution.x = 2000;
             defaultResolution.y = 1500;
         } else {
+            /* 长宽比为16:9 */
             defaultResolution.x = 1920;
             defaultResolution.y = 1080;
         }
@@ -107,7 +107,7 @@ public class FaceUtil {
         }
 
         // 按照分辨率从大到小排序
-        List<Camera.Size> supportedResolutions = new ArrayList(cameraSizes);
+        List<Camera.Size> supportedResolutions = new ArrayList<>(cameraSizes);
         Collections.sort(supportedResolutions, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size a, Camera.Size b) {

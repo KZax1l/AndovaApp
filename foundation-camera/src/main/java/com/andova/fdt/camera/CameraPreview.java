@@ -244,23 +244,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     /**
      * 检查相机权限
-     *
-     * @return
      */
     private boolean checkCameraPermission() {
         int status = getContext().checkPermission(Manifest.permission.CAMERA, Process.myPid(), Process.myUid());
-        if (PackageManager.PERMISSION_GRANTED == status) {
-            return true;
-        }
-        return false;
+        return PackageManager.PERMISSION_GRANTED == status;
     }
 
     /**
      * 在摄像头启动前设置参数
-     *
-     * @param camera
-     * @param width
-     * @param height
      */
     private void setCameraParams(Camera camera, int width, int height) {
         // 获取摄像头支持的pictureSize列表

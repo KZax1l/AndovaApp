@@ -14,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.andova.app.camera.RecognitionActivity;
 import com.andova.app.music.MusicActivity;
 
 /**
@@ -44,18 +45,31 @@ public class MainActivity extends BaseActivity {
         @Override
         public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
             if (holder.ivIcon == null) return;
-            holder.ivIcon.setImageResource(R.mipmap.ic_module_music);
-            holder.ivIcon.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    v.getContext().startActivity(new Intent(v.getContext(), MusicActivity.class));
-                }
-            });
+            switch (position) {
+                case 0:
+                    holder.ivIcon.setImageResource(R.mipmap.ic_module_music);
+                    holder.ivIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            v.getContext().startActivity(new Intent(v.getContext(), MusicActivity.class));
+                        }
+                    });
+                    break;
+                case 1:
+                    holder.ivIcon.setImageResource(R.mipmap.ic_module_camera);
+                    holder.ivIcon.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            v.getContext().startActivity(new Intent(v.getContext(), RecognitionActivity.class));
+                        }
+                    });
+                    break;
+            }
         }
 
         @Override
         public int getItemCount() {
-            return 1;
+            return 2;
         }
     }
 

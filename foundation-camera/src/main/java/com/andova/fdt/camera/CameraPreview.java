@@ -289,21 +289,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
          * 由于{@link pictureSizeList}和{@link previewSizeList}获取的是系统返回的横屏模式下的数据，
          * 所以宽度值较高度值大
          */
-        int tempW = (int) (height * (h / w));
-        int tempH = (int) (width * (w / h));
+        int tempW = (int) (height * (maybeFlippedWidth / maybeFlippedHeight));
+        int tempH = (int) (width * (maybeFlippedHeight / maybeFlippedWidth));
         if (tempW >= width) {
             setLayoutParams(new FrameLayout.LayoutParams(tempW, height));
-            scale = tempW / h;
+            scale = tempW / maybeFlippedWidth;
         } else if (tempH >= height) {
             setLayoutParams(new FrameLayout.LayoutParams(width, tempH));
-            scale = tempH / w;
+            scale = tempH / maybeFlippedHeight;
         } else {
             setLayoutParams(new FrameLayout.LayoutParams(width, height));
         }
         if (mFaceDetector != null) {
             mFaceDetector.setZoomRatio(5f * scale);
-            mFaceDetector.setPreviewWidth((int) h);
-            mFaceDetector.setPreviewHeight((int) w);
+            mFaceDetector.setPreviewWidth((int) maybeFlippedWidth);
+            mFaceDetector.setPreviewHeight((int) maybeFlippedHeight);
         }
 
         parameters.setJpegQuality(100);

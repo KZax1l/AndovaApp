@@ -4,6 +4,9 @@ import android.app.Application;
 
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
+import com.squareup.leakcanary.AndroidExcludedRefs;
+import com.squareup.leakcanary.DisplayLeakService;
+import com.squareup.leakcanary.ExcludedRefs;
 import com.squareup.leakcanary.LeakCanary;
 import com.squareup.leakcanary.RefWatcher;
 
@@ -37,7 +40,18 @@ public class AndovaApplication extends Application {
         if (LeakCanary.isInAnalyzerProcess(this)) {
             return RefWatcher.DISABLED;
         }
-        return LeakCanary.install(this);
+        ExcludedRefs excludedRefs = AndroidExcludedRefs.createAppDefaults()
+                .staticField("android.view.inputmethod.InputMethodManager", "sInstance")
+                .instanceField("android.view.inputmethod.InputMethodManager", "mLastSrvView")
+                .instanceField("android.view.inputmethod.InputMethodManager$1", "this$0")
+                .instanceField("android.view.inputmethod.InputMethodManager$ControlledInputConnectionWrapper", "mInputConnection")
+                .instanceField("android.view.inputmethod.InputMethodManager$ControlledInputConnectionWrapper", "mParentInputMethodManager")
+                .instanceField("android.hardware.fingerprint.FingerprintManager$1", "this$0")
+                .build();
+        return LeakCanary.refWatcher(this)
+                .listenerServiceClass(DisplayLeakService.class)
+                .excludedRefs(excludedRefs)
+                .buildAndInstall();
     }
 
     /**

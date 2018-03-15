@@ -87,9 +87,6 @@ public class MainFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fr_module_music_main, container, false);
         ivCover = view.findViewById(R.id.iv_cover);
-        if (getContext() != null) {
-            getContext().registerReceiver(mUpdateBroadcast, new IntentFilter(RECEIVER_ACTION_UPDATE_MUSIC_COVER));
-        }
         return view;
     }
 
@@ -124,8 +121,15 @@ public class MainFragment extends Fragment {
     }
 
     @Override
-    public void onDestroyView() {
-        super.onDestroyView();
+    public void onResume() {
+        super.onResume();
+        if (getContext() == null) return;
+        getContext().registerReceiver(mUpdateBroadcast, new IntentFilter(RECEIVER_ACTION_UPDATE_MUSIC_COVER));
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
         if (getContext() == null) return;
         getContext().unregisterReceiver(mUpdateBroadcast);
     }

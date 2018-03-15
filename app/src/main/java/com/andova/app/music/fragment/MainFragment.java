@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import com.andova.app.Constants;
 import com.andova.app.R;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,7 @@ public class MainFragment extends Fragment {
                     || !intent.getAction().equals(RECEIVER_ACTION_UPDATE_MUSIC_COVER))
                 return;
             String uri = intent.getStringExtra(EXTRA_INTENT_MUSIC_COVER_URI);
-            Glide.with(ivCover).load(uri).into(ivCover);
+            Glide.with(ivCover).applyDefaultRequestOptions(new RequestOptions().placeholder(R.mipmap.ic_album_default)).load(uri).into(ivCover);
         }
     };
 

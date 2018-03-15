@@ -9,7 +9,6 @@ import android.media.audiofx.AudioEffect;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
-import android.support.v4.content.LocalBroadcastManager;
 
 import com.andova.app.music.model.MusicPlaybackTrack;
 import com.andova.app.util.MusicUtil;
@@ -382,7 +381,7 @@ class MusicPlayer {
             mMediaTracker.setNextDataSource(MediaStore.Audio.Media.EXTERNAL_CONTENT_URI + "/" + id);
             Intent intent = new Intent(RECEIVER_ACTION_UPDATE_MUSIC_COVER);
             intent.putExtra(EXTRA_INTENT_MUSIC_COVER_URI, MusicUtil.getAlbumArtUri(mDataSource.getAlbumId()).toString());
-            LocalBroadcastManager.getInstance(mService).sendBroadcast(intent);
+            mService.sendBroadcast(intent);
         } else {
             mMediaTracker.setNextDataSource(null);
         }

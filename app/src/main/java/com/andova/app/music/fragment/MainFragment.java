@@ -10,7 +10,6 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
@@ -88,8 +87,7 @@ public class MainFragment extends Fragment {
         View view = inflater.inflate(R.layout.fr_module_music_main, container, false);
         ivCover = view.findViewById(R.id.iv_cover);
         if (getContext() != null) {
-            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mUpdateBroadcast,
-                    new IntentFilter(RECEIVER_ACTION_UPDATE_MUSIC_COVER));
+            getContext().registerReceiver(mUpdateBroadcast, new IntentFilter(RECEIVER_ACTION_UPDATE_MUSIC_COVER));
         }
         return view;
     }
@@ -128,7 +126,7 @@ public class MainFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         if (getContext() == null) return;
-        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mUpdateBroadcast);
+        getContext().unregisterReceiver(mUpdateBroadcast);
     }
 
     private void setupViewPager(ViewPager viewPager) {

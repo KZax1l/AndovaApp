@@ -1,22 +1,33 @@
 package com.andova.app.music.fragment;
 
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 
 import com.andova.app.Constants;
 import com.andova.app.R;
+import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.andova.app.music.MusicActivity.EXTRA_INTENT_MUSIC_COVER_URI;
+import static com.andova.app.music.MusicActivity.RECEIVER_ACTION_UPDATE_MUSIC_COVER;
 
 /**
  * Created by Administrator on 2018-02-23.
@@ -26,6 +37,19 @@ import java.util.List;
  */
 public class MainFragment extends Fragment {
     private String mAction;
+
+    private ImageView ivCover;
+
+    private BroadcastReceiver mUpdateBroadcast = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (TextUtils.isEmpty(intent.getAction())
+                    || !intent.getAction().equals(RECEIVER_ACTION_UPDATE_MUSIC_COVER))
+                return;
+            String uri = intent.getStringExtra(EXTRA_INTENT_MUSIC_COVER_URI);
+            Glide.with(ivCover).load(uri).into(ivCover);
+        }
+    };
 
     public static MainFragment newInstance(String action) {
         MainFragment mainFragment = new MainFragment();
@@ -61,7 +85,13 @@ public class MainFragment extends Fragment {
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fr_module_music_main, container, false);
+        View view = inflater.inflate(R.layout.fr_module_music_main, container, false);
+        ivCover = view.findViewById(R.id.iv_cover);
+        if (getContext() != null) {
+            LocalBroadcastManager.getInstance(getContext()).registerReceiver(mUpdateBroadcast,
+                    new IntentFilter(RECEIVER_ACTION_UPDATE_MUSIC_COVER));
+        }
+        return view;
     }
 
     @Override
@@ -92,6 +122,13 @@ public class MainFragment extends Fragment {
             setupViewPager(viewPager);
             viewPager.setOffscreenPageLimit(2);
         }
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (getContext() == null) return;
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mUpdateBroadcast);
     }
 
     private void setupViewPager(ViewPager viewPager) {

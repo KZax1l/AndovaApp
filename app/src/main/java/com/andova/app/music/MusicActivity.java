@@ -13,6 +13,7 @@ import android.support.design.widget.NavigationView;
 import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 
 import com.andova.app.BaseActivity;
 import com.andova.app.Constants;
@@ -31,11 +32,19 @@ import static com.andova.app.music.player.MusicTracker.sService;
 public class MusicActivity extends BaseActivity implements ServiceConnection {
     private MusicTracker.ServiceToken mToken;
 
+    public static final String EXTRA_INTENT_MUSIC_COVER_URI = "intent.extra.MUSIC_COVER_URI";
+    public static final String RECEIVER_ACTION_UPDATE_MUSIC_COVER = "receiver.action.UPDATE_MUSIC_COVER";
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     protected void translucent(boolean translucentStatus, boolean translucentNavigation) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
-            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+            window.clearFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS
+                    | WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+            window.getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                    | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
             if (translucentStatus) window.setStatusBarColor(Color.TRANSPARENT);
             if (translucentNavigation) window.setNavigationBarColor(Color.TRANSPARENT);
         }

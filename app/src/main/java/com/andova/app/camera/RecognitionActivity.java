@@ -1,6 +1,7 @@
 package com.andova.app.camera;
 
 import android.graphics.Color;
+import android.graphics.PixelFormat;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -53,6 +54,9 @@ public class RecognitionActivity extends BaseActivity {
                 System.out.println("checkPixels:" + pixels);
             }
         };
+        FaceRectView faceRectView = (FaceRectView) findViewById(R.id.face_rect_view);
+        faceRectView.setZOrderOnTop(true);
+        faceRectView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         //创建代理类，必须传入相机预览界面
         mDetectorProxy = new DetectorProxy.Builder((CameraPreview) findViewById(R.id.camera_preview))
                 //设置人脸检测实现
@@ -62,7 +66,7 @@ public class RecognitionActivity extends BaseActivity {
                 //设置权限检查监听
                 .setCheckListener(mCameraCheckListener)
                 //设置绘制人脸识别框界面
-                .setFaceRectView((FaceRectView) findViewById(R.id.face_rect_view))
+                .setFaceRectView(faceRectView)
                 //设置是否绘制人脸检测框
                 .setDrawFaceRect(true)
                 //设置预览相机的相机ID
@@ -70,7 +74,7 @@ public class RecognitionActivity extends BaseActivity {
                 //设置可检测的最大人脸数
                 .setMaxFacesCount(5)
                 //设置人脸识别框是否为完整矩形
-                .setFaceIsRect(true)
+                .setFaceIsRect(false)
                 //设置人脸识别框的RGB颜色
                 .setFaceRectColor(Color.rgb(255, 203, 15))
                 //创建代理类

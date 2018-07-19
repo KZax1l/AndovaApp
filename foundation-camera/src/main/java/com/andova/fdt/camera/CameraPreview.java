@@ -1,23 +1,15 @@
 package com.andova.fdt.camera;
 
-import android.Manifest;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.content.pm.PackageManager;
-import android.graphics.Point;
 import android.hardware.Camera;
 import android.os.Build;
-import android.os.Process;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.widget.FrameLayout;
-
-import java.util.List;
 
 /**
  * Created by Administrator on 2018-03-09.
@@ -28,10 +20,10 @@ import java.util.List;
  */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
     private final String TAG = CameraPreview.class.getSimpleName();
-
     private SurfaceHolder mHolder;
     private Camera mCamera;
     private int mCameraId;
+    private long mMinCameraPixels;
     private ICameraCheckListener mCheckListener;
     private IFaceDetector mFaceDetector;
     private int mDisplayOrientation;
@@ -89,8 +81,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             return;
         }
 
-        if (!checkCameraPermission()) {
+        if (!FaceUtil.checkCameraPermission(getContext())) {
             Log.i(TAG, "摄像头权限未打开，请打开后再试");
+            if (mCheckListener != null) {
+                mCheckListener.checkPermission(false);
+            }
             return;
         }
 
@@ -135,23 +130,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mCheckListener.checkPermission(true);
         }
 
+        long pixels = 0;
         try {
             //获取最大宽高，得出最大支持像素
             Camera.Parameters parameters = mCamera.getParameters();
-            // 获取横屏模式下摄像头支持的PictureSize列表
-            List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
-            long pixels = 0L;
-            for (Camera.Size size : pictureSizeList) {
-                if (pixels >= size.width * size.height) continue;
-                pixels = size.width * size.height;
+            // getSupportedPictureSizes：获取横屏模式下摄像头支持的PictureSize列表
+            Camera.Size maxPictureSize = FaceUtil.findMaxCameraSize(parameters.getSupportedPictureSizes());
+            if (maxPictureSize != null) {
+                pixels = maxPictureSize.width * maxPictureSize.height;
             }
-            // 回调该手机像素值
-            if (mCheckListener != null) {
-                if (pixels > 300 * 10000) {// 默认要求手机配置不低于300万像素
+            Log.i(TAG, "camera max support pixels: " + pixels);
+            //回调该手机像素值
+            if (mCheckListener != null && mMinCameraPixels > 0) {
+                if (pixels >= mMinCameraPixels) {
                     mCheckListener.checkPixels(pixels, true);
                 } else {
-                    mCheckListener.checkPixels(pixels, false);
                     closeCamera();
+                    mCheckListener.checkPixels(pixels, false);
                     return;
                 }
             }
@@ -175,15 +170,17 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
                 mFaceDetector.setCameraHeight(mCameraHeight);
             }
             //设置相机参数
-            setCameraParams(mCamera, mCameraWidth, mCameraHeight);
-            Log.i(TAG, "camera getPreviewSize width:" + mCamera.getParameters().getPreviewSize().width
+            mDisplayOrientation = FaceUtil.setCameraParams(this, mFaceDetector, mCamera, mCameraId, mCameraWidth, mCameraHeight);
+            Log.i(TAG,"camera getPreviewSize width:" + mCamera.getParameters().getPreviewSize().width
                     + ",height:" + mCamera.getParameters().getPreviewSize().height);
-            Log.i(TAG, "camera getPictureSize width:" + mCamera.getParameters().getPictureSize().width
+            Log.i(TAG,"camera getPictureSize width:" + mCamera.getParameters().getPictureSize().width
                     + ",height:" + mCamera.getParameters().getPictureSize().height);
             //开始预览
             mCamera.startPreview();
         } catch (Exception e) {
-            Log.e(TAG, "Error starting camera preview: " + e.getMessage());
+            closeCamera();
+            mCheckListener.checkPixels(pixels, false);
+            Log.e(TAG,"Error starting camera preview: " + e.getMessage());
         }
     }
 
@@ -195,10 +192,14 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             mFaceDetector.setOpenCamera(false);
         }
         if (null != mCamera) {
-            mCamera.setPreviewCallback(null);
-            mCamera.stopPreview();
-            mCamera.release();
-            mCamera = null;
+            try {
+                mCamera.setPreviewCallback(null);
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -209,7 +210,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         closeCamera();
         if (mFaceDetector != null) {
             mFaceDetector.release();
-            mFaceDetector = null;
         }
     }
 
@@ -236,6 +236,11 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         return this;
     }
 
+    public CameraPreview setMinCameraPixels(long mMinCameraPixels) {
+        this.mMinCameraPixels = mMinCameraPixels;
+        return this;
+    }
+
     public int getCameraHeight() {
         return mCameraHeight;
     }
@@ -248,108 +253,4 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         return mDisplayOrientation;
     }
 
-    /**
-     * 检查相机权限
-     */
-    private boolean checkCameraPermission() {
-        int status = getContext().checkPermission(Manifest.permission.CAMERA, Process.myPid(), Process.myUid());
-        return PackageManager.PERMISSION_GRANTED == status;
-    }
-
-    /**
-     * 在摄像头启动前设置参数
-     *
-     * @param width  see {@link #mCameraWidth}
-     * @param height see {@link #mCameraHeight}
-     */
-    private void setCameraParams(Camera camera, int width, int height) {
-        // 获取摄像头支持的pictureSize列表
-        Camera.Parameters parameters = camera.getParameters();
-        // 获取横屏模式下摄像头支持的PictureSize列表
-        List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
-        // 从列表中选择合适的分辨率
-        Point pictureSize = FaceUtil.findBestResolution(pictureSizeList, new Point(width, height), true, 0.15f);
-        // 根据选出的PictureSize重新设置SurfaceView大小
-        parameters.setPictureSize(pictureSize.x, pictureSize.y);
-
-        // 获取横屏模式下摄像头支持的PreviewSize列表
-        List<Camera.Size> previewSizeList = parameters.getSupportedPreviewSizes();
-        Point preSize = FaceUtil.findBestResolution(previewSizeList, new Point(width, height), false, 0.15f);
-        parameters.setPreviewSize(preSize.x, preSize.y);
-
-        float w = preSize.x;
-        float h = preSize.y;
-        float scale = 1.0f;
-
-        boolean isCandidatePortrait = w > h;// true代表横屏
-        float maybeFlippedWidth = isCandidatePortrait ? h : w;// 竖屏所对应的宽度值，较小值
-        float maybeFlippedHeight = isCandidatePortrait ? w : h;// 竖屏所对应的高度值，较大值
-
-        /**
-         * 由于{@link pictureSizeList}和{@link previewSizeList}获取的是系统返回的横屏模式下的数据，
-         * 所以宽度值较高度值大
-         */
-        int tempW = (int) (height * (maybeFlippedWidth / maybeFlippedHeight));
-        int tempH = (int) (width * (maybeFlippedHeight / maybeFlippedWidth));
-        if (tempW >= width) {
-            setLayoutParams(new FrameLayout.LayoutParams(tempW, height));
-            scale = tempW / maybeFlippedWidth;
-        } else if (tempH >= height) {
-            setLayoutParams(new FrameLayout.LayoutParams(width, tempH));
-            scale = tempH / maybeFlippedHeight;
-        } else {
-            setLayoutParams(new FrameLayout.LayoutParams(width, height));
-        }
-        if (mFaceDetector != null) {
-            mFaceDetector.setZoomRatio(5f * scale);
-            mFaceDetector.setPreviewWidth((int) maybeFlippedWidth);
-            mFaceDetector.setPreviewHeight((int) maybeFlippedHeight);
-        }
-
-        parameters.setJpegQuality(100);
-        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
-            // 连续对焦
-            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
-        }
-        camera.cancelAutoFocus();
-        setCameraDisplayOrientation();
-        camera.setParameters(parameters);
-    }
-
-    /**
-     * 设置相机显示方向
-     */
-    private void setCameraDisplayOrientation() {
-        Camera.CameraInfo info = new Camera.CameraInfo();
-        Camera.getCameraInfo(mCameraId, info);
-        int rotation = ((Activity) getContext()).getWindowManager().getDefaultDisplay().getRotation();
-        int degree = 0;
-        switch (rotation) {
-            case Surface.ROTATION_0:
-                degree = 0;
-                break;
-            case Surface.ROTATION_90:
-                degree = 90;
-                break;
-            case Surface.ROTATION_180:
-                degree = 180;
-                break;
-            case Surface.ROTATION_270:
-                degree = 270;
-                break;
-        }
-        if (mFaceDetector != null) {
-            mFaceDetector.setOrientionOfCamera(info.orientation);
-        }
-
-        int result;
-        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            result = (info.orientation + degree) % 360;
-            result = (360 - result) % 360;
-        } else {
-            result = (info.orientation - degree + 360) % 360;
-        }
-        mDisplayOrientation = result;
-        mCamera.setDisplayOrientation(result);
-    }
 }

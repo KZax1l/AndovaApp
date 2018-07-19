@@ -32,9 +32,6 @@ public class DetectorProxy<T> {
      */
     public void setFaceRectView(FaceRectView mFaceRectView) {
         this.mFaceRectView = mFaceRectView;
-        if (this.mFaceRectView != null && mCameraPreview != null) {
-            this.mFaceRectView.setWidth(mCameraPreview.getCameraWidth());
-        }
     }
 
     /**
@@ -98,9 +95,17 @@ public class DetectorProxy<T> {
             if (mCameraPreview != null) {
                 mCameraPreview.setCameraId(mCameraId);
             }
-            if (mFaceRectView != null) {
-                mFaceRectView.setCameraId(mCameraId);
-            }
+        }
+    }
+
+    /**
+     * 设置像素最低要求
+     *
+     * @param mMinCameraPixels
+     */
+    public void setMinCameraPixels(long mMinCameraPixels) {
+        if (mCameraPreview != null) {
+            mCameraPreview.setMinCameraPixels(mMinCameraPixels);
         }
     }
 
@@ -196,14 +201,16 @@ public class DetectorProxy<T> {
     }
 
     public static class Builder<T> {
+        private static final int MIN_CAMERA_PIXELS = 5000000;
         private static final int MAX_DETECTOR_FACES = 5;
 
         private CameraPreview mCameraPreview;
         private FaceRectView mFaceRectView;
-        private IFaceDetector<T> mFaceDetector;
         private ICameraCheckListener mCheckListener;
         private IDataListener<T> mDataListener;
+        private IFaceDetector<T> mFaceDetector = new SystemFaceDetector<>();
         private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        private long mMinCameraPixels = MIN_CAMERA_PIXELS;
         private int mMaxFacesCount = MAX_DETECTOR_FACES;
         private int mFaceRectColor = Color.rgb(255, 203, 15);
         private boolean mDrawFaceRect = false;
@@ -225,6 +232,11 @@ public class DetectorProxy<T> {
 
         public Builder setCameraId(int mCameraId) {
             this.mCameraId = mCameraId;
+            return this;
+        }
+
+        public Builder setMinCameraPixels(long mMinCameraPixels) {
+            this.mMinCameraPixels = mMinCameraPixels;
             return this;
         }
 
@@ -264,15 +276,15 @@ public class DetectorProxy<T> {
             detectorProxy.setCheckListener(mCheckListener);
             detectorProxy.setDataListener(mDataListener);
             detectorProxy.setMaxFacesCount(mMaxFacesCount);
-            detectorProxy.setCameraId(mCameraId);
+            detectorProxy.setMinCameraPixels(mMinCameraPixels);
             if (mFaceRectView != null && mDrawFaceRect) {
                 detectorProxy.setFaceRectView(mFaceRectView);
                 detectorProxy.setDrawFaceRect(mDrawFaceRect);
                 detectorProxy.setFaceRectColor(mFaceRectColor);
                 detectorProxy.setFaceIsRect(mFaceIsRect);
             }
+            detectorProxy.setCameraId(mCameraId);
             return detectorProxy;
         }
     }
-
 }

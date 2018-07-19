@@ -1,11 +1,18 @@
 package com.andova.fdt.camera;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.Context;
+import android.content.pm.PackageManager;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.graphics.Rect;
 import android.hardware.Camera;
+import android.os.Process;
 import android.util.Log;
+import android.view.Surface;
+import android.widget.FrameLayout;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,10 +27,10 @@ import java.util.List;
  * @author kzaxil
  * @since 1.0.0
  */
-class FaceUtil {
+public class FaceUtil {
     private static final String TAG = FaceUtil.class.getSimpleName();
 
-    static int getYUVLight(byte[] data, Rect rect, int width) {
+    public static int getYUVLight(byte[] data, Rect rect, int width) {
         if (data == null || rect == null) {
             return 0;
         }
@@ -50,7 +57,7 @@ class FaceUtil {
         return sum / index;
     }
 
-    static void drawFaceRect(Canvas canvas, Rect rect, int rectColor, int width, boolean frontCamera, boolean drawRect) {
+    public static void drawFaceRect(Canvas canvas, Rect rect, int rectColor, boolean drawRect) {
         if (canvas == null) {
             return;
         }
@@ -60,12 +67,6 @@ class FaceUtil {
         float len = (rect.bottom - rect.top) / 8;
         if (len / 8 >= 2) paint.setStrokeWidth(len / 8);
         else paint.setStrokeWidth(2);
-
-        if (frontCamera) {
-            int left = rect.left;
-            rect.left = width - rect.right;
-            rect.right = width - left;
-        }
 
         if (drawRect) {
             paint.setStyle(Paint.Style.STROKE);
@@ -88,6 +89,32 @@ class FaceUtil {
     }
 
     /**
+     * 找出最大像素组合
+     *
+     * @param cameraSizes
+     * @return
+     */
+    public static Camera.Size findMaxCameraSize(List<Camera.Size> cameraSizes) {
+        // 按照分辨率从大到小排序
+        List<Camera.Size> supportedResolutions = new ArrayList(cameraSizes);
+        Collections.sort(supportedResolutions, new Comparator<Camera.Size>() {
+            @Override
+            public int compare(Camera.Size a, Camera.Size b) {
+                int aPixels = a.height * a.width;
+                int bPixels = b.height * b.width;
+                if (bPixels < aPixels) {
+                    return -1;
+                }
+                if (bPixels > aPixels) {
+                    return 1;
+                }
+                return 0;
+            }
+        });
+        return supportedResolutions.get(0);
+    }
+
+    /**
      * 找出最适合的分辨率
      *
      * @param cameraSizes      系统返回的横屏模式下的相机尺寸列表，即宽度值较高度值大
@@ -97,7 +124,7 @@ class FaceUtil {
      *                         由于实际预览页面可能要减去额外控件的高度（如系统状态栏、系统底部导航栏等），
      *                         只要实际预览页面的宽高比介于这两个标准值之间就判定通过
      */
-    static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
+    public static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
         Point defaultResolution = new Point();
         if (isPictureSize) {
             /* 长宽比为4:3 */
@@ -131,9 +158,14 @@ class FaceUtil {
             }
         });
 
+        if (supportedResolutions.size() > 0) {
+            defaultResolution.x = supportedResolutions.get(0).width;
+            defaultResolution.y = supportedResolutions.get(0).height;
+        }
+
+        // 移除不符合条件的分辨率
         double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
         Iterator<Camera.Size> it = supportedResolutions.iterator();
-        // 移除不符合条件的分辨率
         while (it.hasNext()) {
             Camera.Size supportedResolution = it.next();
             int width = supportedResolution.width;
@@ -151,7 +183,7 @@ class FaceUtil {
                 }
             }
 
-            /*
+            /**
              * 在camera分辨率与屏幕分辨率宽高比不相等的情况下，找出差距最小的一组分辨率
              * 由于camera的分辨率是width>height，我们设置的portrait模式中，width<height
              * 因此这里要先交换然preview宽高比后再比较
@@ -185,6 +217,133 @@ class FaceUtil {
         // 没有找到合适的，就返回默认的
         Log.i(TAG, "No suitable preview resolutions, using default: " + defaultResolution);
         return defaultResolution;
+    }
+
+    /**
+     * 检查相机权限
+     *
+     * @param context
+     * @return
+     */
+    public static boolean checkCameraPermission(Context context) {
+        if (context != null) {
+            int status = context.checkPermission(Manifest.permission.CAMERA, Process.myPid(), Process.myUid());
+            if (PackageManager.PERMISSION_GRANTED == status) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 在摄像头启动前设置参数
+     *
+     * @param cameraPreview
+     * @param faceDetector
+     * @param camera
+     * @param cameraId
+     * @param width
+     * @param height
+     * @param <T>
+     */
+    public static <T> int setCameraParams(CameraPreview cameraPreview, IFaceDetector<T> faceDetector, Camera camera,
+                                          int cameraId, int width, int height) {
+        if (camera == null) {
+            return 0;
+        }
+        // 获取摄像头支持的pictureSize列表
+        Camera.Parameters parameters = camera.getParameters();
+        List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
+        // 从列表中选择合适的分辨率
+        Point pictureSize = FaceUtil.findBestResolution(pictureSizeList, new Point(width, height), true, 0.15f);
+        // 根据选出的PictureSize重新设置SurfaceView大小
+        parameters.setPictureSize(pictureSize.x, pictureSize.y);
+
+        // 获取摄像头支持的PreviewSize列表
+        List<Camera.Size> previewSizeList = parameters.getSupportedPreviewSizes();
+        Point preSize = FaceUtil.findBestResolution(previewSizeList, new Point(width, height), false, 0.15f);
+        parameters.setPreviewSize(preSize.x, preSize.y);
+
+        float w = preSize.x;
+        float h = preSize.y;
+        float scale = 1.0f;
+        int tempW = (int) (height * (h / w));
+        int tempH = (int) (width * (w / h));
+        if (cameraPreview != null) {
+            if (tempW >= width) {
+                cameraPreview.setLayoutParams(new FrameLayout.LayoutParams(tempW, height));
+                scale = tempW / h;
+            } else if (tempH >= height) {
+                cameraPreview.setLayoutParams(new FrameLayout.LayoutParams(width, tempH));
+                scale = tempH / w;
+            } else {
+                cameraPreview.setLayoutParams(new FrameLayout.LayoutParams(width, height));
+            }
+        }
+        if (faceDetector != null) {
+            faceDetector.setZoomRatio(5f * scale);
+            faceDetector.setPreviewWidth((int) w);
+            faceDetector.setPreviewHeight((int) h);
+        }
+
+        parameters.setJpegQuality(100);
+        if (parameters.getSupportedFocusModes().contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE)) {
+            // 连续对焦
+            parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
+        }
+        camera.cancelAutoFocus();
+        int displayOrientation = setCameraDisplayOrientation(cameraPreview.getContext(), faceDetector, camera, cameraId);
+        camera.setParameters(parameters);
+        return displayOrientation;
+    }
+
+    /**
+     * 设置相机显示方向
+     *
+     * @param context
+     * @param faceDetector
+     * @param camera
+     * @param cameraId
+     * @param <T>
+     * @return
+     */
+    public static <T> int setCameraDisplayOrientation(Context context, IFaceDetector<T> faceDetector, Camera camera, int cameraId) {
+        if (context == null) {
+            return 0;
+        }
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
+        int rotation = ((Activity) context).getWindowManager().getDefaultDisplay().getRotation();
+        int degree = 0;
+        switch (rotation) {
+            case Surface.ROTATION_0:
+                degree = 0;
+                break;
+            case Surface.ROTATION_90:
+                degree = 90;
+                break;
+            case Surface.ROTATION_180:
+                degree = 180;
+                break;
+            case Surface.ROTATION_270:
+                degree = 270;
+                break;
+        }
+        if (faceDetector != null) {
+            faceDetector.setOrientionOfCamera(info.orientation);
+        }
+
+        int result;
+        if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            result = (info.orientation + degree) % 360;
+            result = (360 - result) % 360;
+        } else {
+            result = (info.orientation - degree + 360) % 360;
+        }
+        if (camera != null) {
+            camera.setDisplayOrientation(result);
+        }
+        return result;
     }
 
 }

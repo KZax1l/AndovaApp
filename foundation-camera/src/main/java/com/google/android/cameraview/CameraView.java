@@ -486,6 +486,11 @@ public class CameraView extends FrameLayout {
             }
         }
 
+        @Override
+        public void onPreviewFrame(byte[] data) {
+
+        }
+
         public void reserveRequestLayoutOnOpen() {
             mRequestLayoutOnOpen = true;
         }
@@ -571,6 +576,9 @@ public class CameraView extends FrameLayout {
          * @param data       JPEG data.
          */
         public void onPictureTaken(CameraView cameraView, byte[] data) {
+        }
+
+        public void onPreviewFrame(CameraView cameraView, byte[] data) {
         }
     }
 }

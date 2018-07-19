@@ -77,5 +77,7 @@ abstract class CameraViewImpl implements ICameraInfo {
 
         void onPictureTaken(byte[] data);
 
+        void onPreviewFrame(byte[] data);
+
     }
 }

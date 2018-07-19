@@ -247,6 +247,12 @@ class Camera1 extends CameraViewImpl {
                     camera.startPreview();
                 }
             });
+            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+                @Override
+                public void onPreviewFrame(byte[] data, Camera camera) {
+                    mCallback.onPreviewFrame(data);
+                }
+            });
         }
     }
 

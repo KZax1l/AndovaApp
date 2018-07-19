@@ -165,6 +165,7 @@ class Camera2 extends CameraViewImpl {
                     byte[] data = new byte[buffer.remaining()];
                     buffer.get(data);
                     mCallback.onPictureTaken(data);
+                    mCallback.onPreviewFrame(data);
                 }
             }
         }

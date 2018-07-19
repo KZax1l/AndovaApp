@@ -36,6 +36,7 @@ import com.andova.fdt.camera.R;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class CameraView extends FrameLayout {
@@ -427,6 +428,22 @@ public class CameraView extends FrameLayout {
         mImpl.takePicture();
     }
 
+    public int getNumberOfCameras() {
+        return mImpl.getNumberOfCameras();
+    }
+
+    public List<Size> getSupportedPictureSizes() {
+        return mImpl.getSupportedPictureSizes();
+    }
+
+    public int getCameraWidth() {
+        return mImpl.getCameraWidth();
+    }
+
+    public int getCameraHeight() {
+        return mImpl.getCameraWidth();
+    }
+
     private class CallbackBridge implements CameraViewImpl.Callback {
 
         private final ArrayList<Callback> mCallbacks = new ArrayList<>();
@@ -556,5 +573,4 @@ public class CameraView extends FrameLayout {
         public void onPictureTaken(CameraView cameraView, byte[] data) {
         }
     }
-
 }

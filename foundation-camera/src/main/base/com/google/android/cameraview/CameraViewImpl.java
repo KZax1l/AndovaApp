@@ -20,7 +20,7 @@ import android.view.View;
 
 import java.util.Set;
 
-abstract class CameraViewImpl {
+abstract class CameraViewImpl implements ICameraInfo {
 
     protected final Callback mCallback;
 

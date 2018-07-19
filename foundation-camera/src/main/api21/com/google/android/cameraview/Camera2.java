@@ -36,7 +36,9 @@ import android.util.SparseIntArray;
 import android.view.Surface;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 
@@ -640,8 +642,8 @@ class Camera2 extends CameraViewImpl {
                     new CameraCaptureSession.CaptureCallback() {
                         @Override
                         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                                @NonNull CaptureRequest request,
-                                @NonNull TotalCaptureResult result) {
+                                                       @NonNull CaptureRequest request,
+                                                       @NonNull TotalCaptureResult result) {
                             unlockFocus();
                         }
                     }, null);
@@ -671,6 +673,39 @@ class Camera2 extends CameraViewImpl {
         }
     }
 
+    @Override
+    public int getNumberOfCameras() {
+        try {
+            return mCameraManager.getCameraIdList().length;
+        } catch (CameraAccessException | NullPointerException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    @Override
+    public List<Size> getSupportedPictureSizes() {
+        List<Size> list = new ArrayList<>(5);
+        if (mCameraCharacteristics == null) return list;
+        StreamConfigurationMap map = mCameraCharacteristics.get(
+                CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+        if (map == null) return list;
+        for (android.util.Size size : map.getOutputSizes(ImageFormat.JPEG)) {
+            list.add(new Size(size.getWidth(), size.getHeight()));
+        }
+        return list;
+    }
+
+    @Override
+    public int getCameraWidth() {
+        return mPreview.getWidth();
+    }
+
+    @Override
+    public int getCameraHeight() {
+        return mPreview.getHeight();
+    }
+
     /**
      * A {@link CameraCaptureSession.CaptureCallback} for capturing a still picture.
      */
@@ -695,13 +730,13 @@ class Camera2 extends CameraViewImpl {
 
         @Override
         public void onCaptureProgressed(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
+                                        @NonNull CaptureRequest request, @NonNull CaptureResult partialResult) {
             process(partialResult);
         }
 
         @Override
         public void onCaptureCompleted(@NonNull CameraCaptureSession session,
-                @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
+                                       @NonNull CaptureRequest request, @NonNull TotalCaptureResult result) {
             process(result);
         }
 

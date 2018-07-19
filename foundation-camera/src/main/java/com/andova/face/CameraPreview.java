@@ -1,4 +1,4 @@
-package com.andova.fdt.camera;
+package com.andova.face;
 
 import android.annotation.TargetApi;
 import android.app.Activity;

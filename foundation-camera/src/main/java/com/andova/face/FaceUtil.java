@@ -1,4 +1,4 @@
-package com.andova.fdt.camera;
+package com.andova.face;
 
 import android.Manifest;
 import android.app.Activity;

@@ -1,4 +1,4 @@
-package com.andova.fdt.camera;
+package com.andova.face;
 
 import android.graphics.Bitmap;
 import android.graphics.Point;

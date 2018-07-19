@@ -11,6 +11,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
+import com.andova.face.detector.ICameraPreview;
+
 /**
  * Created by Administrator on 2018-03-09.
  * <p>自定义相机</p>
@@ -18,7 +20,7 @@ import android.view.SurfaceView;
  * @author kzaxil
  * @since 1.0.0
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, ICameraPreview<Camera> {
     private final String TAG = CameraPreview.class.getSimpleName();
     private SurfaceHolder mHolder;
     private Camera mCamera;
@@ -76,6 +78,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     /**
      * 打开相机
      */
+    @Override
     public void openCamera() {
         if (null != mCamera) {
             return;
@@ -171,22 +174,23 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             }
             //设置相机参数
             mDisplayOrientation = FaceUtil.setCameraParams(this, mFaceDetector, mCamera, mCameraId, mCameraWidth, mCameraHeight);
-            Log.i(TAG,"camera getPreviewSize width:" + mCamera.getParameters().getPreviewSize().width
+            Log.i(TAG, "camera getPreviewSize width:" + mCamera.getParameters().getPreviewSize().width
                     + ",height:" + mCamera.getParameters().getPreviewSize().height);
-            Log.i(TAG,"camera getPictureSize width:" + mCamera.getParameters().getPictureSize().width
+            Log.i(TAG, "camera getPictureSize width:" + mCamera.getParameters().getPictureSize().width
                     + ",height:" + mCamera.getParameters().getPictureSize().height);
             //开始预览
             mCamera.startPreview();
         } catch (Exception e) {
             closeCamera();
             mCheckListener.checkPixels(pixels, false);
-            Log.e(TAG,"Error starting camera preview: " + e.getMessage());
+            Log.e(TAG, "Error starting camera preview: " + e.getMessage());
         }
     }
 
     /**
      * 关闭相机
      */
+    @Override
     public void closeCamera() {
         if (mFaceDetector != null) {
             mFaceDetector.setOpenCamera(false);
@@ -206,6 +210,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     /**
      * 释放资源
      */
+    @Override
     public void release() {
         closeCamera();
         if (mFaceDetector != null) {
@@ -213,29 +218,35 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
     }
 
+    @Override
     public Camera getCamera() {
         return mCamera;
     }
 
+    @Override
     public CameraPreview setFaceDetector(IFaceDetector mFaceDetector) {
         this.mFaceDetector = mFaceDetector;
         return this;
     }
 
+    @Override
     public CameraPreview setCheckListener(ICameraCheckListener mCheckListener) {
         this.mCheckListener = mCheckListener;
         return this;
     }
 
+    @Override
     public int getCameraId() {
         return mCameraId;
     }
 
+    @Override
     public CameraPreview setCameraId(int mCameraId) {
         this.mCameraId = mCameraId;
         return this;
     }
 
+    @Override
     public CameraPreview setMinCameraPixels(long mMinCameraPixels) {
         this.mMinCameraPixels = mMinCameraPixels;
         return this;

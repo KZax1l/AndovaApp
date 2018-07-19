@@ -1,7 +1,11 @@
 package com.andova.face;
 
 import android.graphics.Color;
-import android.hardware.Camera;
+
+import com.andova.face.detector.ICameraPreview;
+
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
+import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
 
 /**
  * Created by Administrator on 2018-03-09.
@@ -11,7 +15,7 @@ import android.hardware.Camera;
  * @since 1.0.0
  */
 public class DetectorProxy<T> {
-    private CameraPreview mCameraPreview;
+    private ICameraPreview mCameraPreview;
     private FaceRectView mFaceRectView;
     private IFaceDetector<T> mFaceDetector;
     private boolean mDrawFaceRect;
@@ -21,14 +25,12 @@ public class DetectorProxy<T> {
      *
      * @param mCameraPreview 相机预览界面
      */
-    private DetectorProxy(CameraPreview mCameraPreview) {
+    private DetectorProxy(ICameraPreview mCameraPreview) {
         this.mCameraPreview = mCameraPreview;
     }
 
     /**
      * 设置绘制人脸检测框界面
-     *
-     * @param mFaceRectView
      */
     public void setFaceRectView(FaceRectView mFaceRectView) {
         this.mFaceRectView = mFaceRectView;
@@ -38,7 +40,6 @@ public class DetectorProxy<T> {
      * 设置人脸检测类，默认实现为原生检测类，可以替换成第三方库检测类
      *
      * @param faceDetector 人脸检测类
-     * @return
      */
     public void setFaceDetector(IFaceDetector<T> faceDetector) {
         if (faceDetector != null) {
@@ -51,9 +52,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置相机检查监听
-     *
-     * @param mCheckListener
-     * @return
      */
     public void setCheckListener(ICameraCheckListener mCheckListener) {
         if (mCameraPreview != null) {
@@ -63,8 +61,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置检测监听
-     *
-     * @param mDataListener
      */
     public void setDataListener(final IDataListener<T> mDataListener) {
         if (mFaceDetector != null) {
@@ -85,13 +81,10 @@ public class DetectorProxy<T> {
 
     /**
      * 设置相机预览为前置还是后置摄像头
-     *
-     * @param mCameraId
-     * @return
      */
     public void setCameraId(int mCameraId) {
-        if (mCameraId == Camera.CameraInfo.CAMERA_FACING_BACK
-                || mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+        if (mCameraId == CAMERA_FACING_BACK
+                || mCameraId == CAMERA_FACING_FRONT) {
             if (mCameraPreview != null) {
                 mCameraPreview.setCameraId(mCameraId);
             }
@@ -100,8 +93,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置像素最低要求
-     *
-     * @param mMinCameraPixels
      */
     public void setMinCameraPixels(long mMinCameraPixels) {
         if (mCameraPreview != null) {
@@ -111,9 +102,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置检测最大人脸数量
-     *
-     * @param mMaxFacesCount
-     * @return
      */
     public void setMaxFacesCount(int mMaxFacesCount) {
         if (mFaceDetector != null) {
@@ -123,8 +111,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置是否绘制人脸检测框
-     *
-     * @param mDrawFaceRect
      */
     public void setDrawFaceRect(boolean mDrawFaceRect) {
         this.mDrawFaceRect = mDrawFaceRect;
@@ -132,8 +118,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置人脸检测框是否是矩形
-     *
-     * @param mFaceIsRect
      */
     public void setFaceIsRect(boolean mFaceIsRect) {
         if (mFaceRectView != null) {
@@ -143,8 +127,6 @@ public class DetectorProxy<T> {
 
     /**
      * 设置人脸检测框颜色
-     *
-     * @param rectColor
      */
     public void setFaceRectColor(int rectColor) {
         if (mFaceRectView != null) {
@@ -181,14 +163,12 @@ public class DetectorProxy<T> {
 
     /**
      * 获取相机ID
-     *
-     * @return
      */
     public int getCameraId() {
         if (mCameraPreview != null) {
             return mCameraPreview.getCameraId();
         }
-        return Camera.CameraInfo.CAMERA_FACING_BACK;
+        return CAMERA_FACING_BACK;
     }
 
     /**
@@ -204,19 +184,19 @@ public class DetectorProxy<T> {
         private static final int MIN_CAMERA_PIXELS = 5000000;
         private static final int MAX_DETECTOR_FACES = 5;
 
-        private CameraPreview mCameraPreview;
+        private ICameraPreview mCameraPreview;
         private FaceRectView mFaceRectView;
         private ICameraCheckListener mCheckListener;
         private IDataListener<T> mDataListener;
         private IFaceDetector<T> mFaceDetector = new SystemFaceDetector<>();
-        private int mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+        private int mCameraId = CAMERA_FACING_BACK;
         private long mMinCameraPixels = MIN_CAMERA_PIXELS;
         private int mMaxFacesCount = MAX_DETECTOR_FACES;
         private int mFaceRectColor = Color.rgb(255, 203, 15);
         private boolean mDrawFaceRect = false;
         private boolean mFaceIsRect = false;
 
-        public Builder(CameraPreview mCameraPreview) {
+        public Builder(ICameraPreview mCameraPreview) {
             this.mCameraPreview = mCameraPreview;
         }
 

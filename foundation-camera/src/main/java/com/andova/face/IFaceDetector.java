@@ -30,7 +30,7 @@ public interface IFaceDetector<T> {
 
     void setCameraId(int mCameraId);
 
-    void setOrientionOfCamera(int mOrientionOfCamera);
+    void setOrientationOfCamera(int orientationOfCamera);
 
     void setZoomRatio(float mZoomRatio);
 

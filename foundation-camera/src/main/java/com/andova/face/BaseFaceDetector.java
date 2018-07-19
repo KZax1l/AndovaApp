@@ -135,7 +135,7 @@ public abstract class BaseFaceDetector<T> implements IFaceDetector<T>, Runnable 
      * @return
      */
     @Override
-    public void setOrientionOfCamera(int mOrientionOfCamera) {
+    public void setOrientationOfCamera(int mOrientionOfCamera) {
         this.mOrientionOfCamera = mOrientionOfCamera;
     }
 

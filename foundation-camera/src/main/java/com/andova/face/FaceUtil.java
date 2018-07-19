@@ -96,7 +96,7 @@ public class FaceUtil {
      */
     public static Camera.Size findMaxCameraSize(List<Camera.Size> cameraSizes) {
         // 按照分辨率从大到小排序
-        List<Camera.Size> supportedResolutions = new ArrayList(cameraSizes);
+        List<Camera.Size> supportedResolutions = new ArrayList<>(cameraSizes);
         Collections.sort(supportedResolutions, new Comparator<Camera.Size>() {
             @Override
             public int compare(Camera.Size a, Camera.Size b) {
@@ -330,7 +330,7 @@ public class FaceUtil {
                 break;
         }
         if (faceDetector != null) {
-            faceDetector.setOrientionOfCamera(info.orientation);
+            faceDetector.setOrientationOfCamera(info.orientation);
         }
 
         int result;

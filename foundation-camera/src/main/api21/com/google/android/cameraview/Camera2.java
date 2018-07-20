@@ -707,6 +707,21 @@ class Camera2 extends CameraViewImpl {
         return mPreview.getHeight();
     }
 
+    @Override
+    public int getPreviewWidth() {
+        return 0;
+    }
+
+    @Override
+    public int getPreviewHeight() {
+        return 0;
+    }
+
+    @Override
+    public int getOrientationOfCamera() {
+        return 0;
+    }
+
     /**
      * A {@link CameraCaptureSession.CaptureCallback} for capturing a still picture.
      */

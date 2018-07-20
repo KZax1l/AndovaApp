@@ -450,6 +450,18 @@ public class CameraView extends FrameLayout {
         return mImpl.getCameraWidth();
     }
 
+    public int getPreviewWidth() {
+        return mImpl.getPreviewWidth();
+    }
+
+    public int getPreviewHeight() {
+        return mImpl.getPreviewHeight();
+    }
+
+    public int getOrientationOfCamera() {
+        return mImpl.getOrientationOfCamera();
+    }
+
     private class CallbackBridge implements CameraViewImpl.Callback {
 
         private final ArrayList<Callback> mCallbacks = new ArrayList<>();
@@ -494,7 +506,9 @@ public class CameraView extends FrameLayout {
 
         @Override
         public void onPreviewFrame(byte[] data) {
-
+            for (Callback callback : mCallbacks) {
+                callback.onPreviewFrame(CameraView.this, data);
+            }
         }
 
         public void reserveRequestLayoutOnOpen() {

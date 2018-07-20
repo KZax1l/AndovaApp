@@ -14,6 +14,8 @@ import android.util.Log;
 import android.view.Surface;
 import android.widget.FrameLayout;
 
+import com.google.android.cameraview.Size;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -111,6 +113,14 @@ public class FaceUtil {
         return supportedResolutions.get(0);
     }
 
+    public static Point findBestResolutionSize(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
+        List<Size> list = new ArrayList<>(cameraSizes.size());
+        for (Camera.Size size : cameraSizes) {
+            list.add(new Size(size.width, size.height));
+        }
+        return findBestResolution(list, screenResolution, isPictureSize, maxDistortion);
+    }
+
     /**
      * 找出最适合的分辨率
      *
@@ -121,7 +131,7 @@ public class FaceUtil {
      *                         由于实际预览页面可能要减去额外控件的高度（如系统状态栏、系统底部导航栏等），
      *                         只要实际预览页面的宽高比介于这两个标准值之间就判定通过
      */
-    public static Point findBestResolution(List<Camera.Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
+    public static Point findBestResolution(List<Size> cameraSizes, Point screenResolution, boolean isPictureSize, float maxDistortion) {
         Point defaultResolution = new Point();
         if (isPictureSize) {
             /* 长宽比为4:3 */
@@ -138,13 +148,13 @@ public class FaceUtil {
         }
 
         // 按照分辨率从大到小排序
-        List<Camera.Size> supportedResolutions = new ArrayList<>(cameraSizes);
-        Collections.sort(supportedResolutions, new Comparator<Camera.Size>() {
+        List<Size> supportedResolutions = new ArrayList<>(cameraSizes);
+        Collections.sort(supportedResolutions, new Comparator<Size>() {
             @Override
-            public int compare(Camera.Size a, Camera.Size b) {
+            public int compare(Size a, Size b) {
                 // 根据第一个参数(这里的a)小于、等于或大于第二个参数(这里的b)分别返回负整数、零或正整数（从小到大排列的情况）
-                int aPixels = a.height * a.width;
-                int bPixels = b.height * b.width;
+                int aPixels = a.getHeight() * a.getWidth();
+                int bPixels = b.getHeight() * b.getWidth();
                 if (bPixels < aPixels) {
                     return -1;
                 }
@@ -156,17 +166,17 @@ public class FaceUtil {
         });
 
         if (supportedResolutions.size() > 0) {
-            defaultResolution.x = supportedResolutions.get(0).width;
-            defaultResolution.y = supportedResolutions.get(0).height;
+            defaultResolution.x = supportedResolutions.get(0).getWidth();
+            defaultResolution.y = supportedResolutions.get(0).getHeight();
         }
 
         // 移除不符合条件的分辨率
         double screenAspectRatio = (double) screenResolution.x / (double) screenResolution.y;
-        Iterator<Camera.Size> it = supportedResolutions.iterator();
+        Iterator<Size> it = supportedResolutions.iterator();
         while (it.hasNext()) {
-            Camera.Size supportedResolution = it.next();
-            int width = supportedResolution.width;
-            int height = supportedResolution.height;
+            Size supportedResolution = it.next();
+            int width = supportedResolution.getWidth();
+            int height = supportedResolution.getHeight();
             // 移除低于下限的分辨率，尽可能取高分辨率
             if (isPictureSize) {
                 if (width * height < 2000 * 1500) {// 低于三百万像素移除
@@ -205,8 +215,8 @@ public class FaceUtil {
 
         // 如果没有找到合适的，并且还有候选的像素，则设置其中最大尺寸的，对于配置比较低的机器不太合适
         if (!supportedResolutions.isEmpty()) {
-            Camera.Size largestPreview = supportedResolutions.get(0);
-            Point largestSize = new Point(largestPreview.width, largestPreview.height);
+            Size largestPreview = supportedResolutions.get(0);
+            Point largestSize = new Point(largestPreview.getWidth(), largestPreview.getHeight());
             Log.w(TAG, "using largest suitable preview resolution: " + largestSize);
             return largestSize;
         }
@@ -241,13 +251,13 @@ public class FaceUtil {
         Camera.Parameters parameters = camera.getParameters();
         List<Camera.Size> pictureSizeList = parameters.getSupportedPictureSizes();
         // 从列表中选择合适的分辨率
-        Point pictureSize = FaceUtil.findBestResolution(pictureSizeList, new Point(width, height), true, 0.15f);
+        Point pictureSize = FaceUtil.findBestResolutionSize(pictureSizeList, new Point(width, height), true, 0.15f);
         // 根据选出的PictureSize重新设置SurfaceView大小
         parameters.setPictureSize(pictureSize.x, pictureSize.y);
 
         // 获取摄像头支持的PreviewSize列表
         List<Camera.Size> previewSizeList = parameters.getSupportedPreviewSizes();
-        Point preSize = FaceUtil.findBestResolution(previewSizeList, new Point(width, height), false, 0.15f);
+        Point preSize = FaceUtil.findBestResolutionSize(previewSizeList, new Point(width, height), false, 0.15f);
         parameters.setPreviewSize(preSize.x, preSize.y);
 
         float w = preSize.x;

@@ -16,4 +16,10 @@ public interface ICameraInfo {
     int getCameraWidth();
 
     int getCameraHeight();
+
+    int getPreviewWidth();
+
+    int getPreviewHeight();
+
+    int getOrientationOfCamera();
 }

@@ -38,9 +38,10 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
                 continue;
             }
             detectionFaces();
-            if (mDataListener != null) {
-                mDataListener.onDetectorData(mDetectorData);
-            }
+
+            if (mDataListener == null || mDetectorData.getFaceRectList() == null
+                    || mDetectorData.getFaceRectList().length == 0) continue;
+            mDataListener.onDetectorData(mDetectorData);
         }
     }
 

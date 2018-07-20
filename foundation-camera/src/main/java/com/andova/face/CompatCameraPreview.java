@@ -1,8 +1,11 @@
 package com.andova.face;
 
+import android.app.Activity;
 import android.support.annotation.NonNull;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import com.andova.face.detector.CameraProvider;
 import com.andova.face.detector.IPreview;
 import com.google.android.cameraview.CameraView;
 import com.google.android.cameraview.Size;
@@ -29,9 +32,18 @@ public class CompatCameraPreview implements IPreview {
     private CameraView mCamera;
     private IFaceDetector mFaceDetector;
     private ICameraCheckListener mCheckListener;
+    private CameraProvider mCameraProvider = new CameraProvider();
+
+    private int mCameraWidth;
+    private int mCameraHeight;
 
     public CompatCameraPreview(@NonNull CameraView cameraView) {
         mCamera = cameraView;
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        ((Activity) cameraView.getContext()).getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        mCameraWidth = metrics.widthPixels;
+        mCameraHeight = metrics.heightPixels;
     }
 
     @Override
@@ -105,22 +117,22 @@ public class CompatCameraPreview implements IPreview {
                 @Override
                 public void onPreviewFrame(CameraView cameraView, byte[] data) {
                     if (mFaceDetector != null) {
-                        mFaceDetector.setCameraPreviewData(data, null);
+                        mCameraProvider.previewWidth = mCamera.getPreviewWidth();
+                        mCameraProvider.previewHeight = mCamera.getPreviewHeight();
+                        mFaceDetector.setCameraPreviewData(data, mCameraProvider);
                         mFaceDetector.setOpenCamera(true);
+                        mFaceDetector.setPreviewWidth(mCamera.getPreviewWidth());
+                        mFaceDetector.setPreviewHeight(mCamera.getPreviewHeight());
                     }
                 }
             });
             Log.i(TAG, "camera size width:" + mCamera.getCameraWidth() + ",height:" + mCamera.getCameraHeight());
             if (mFaceDetector != null) {
-                mFaceDetector.setCameraWidth(mCamera.getCameraWidth());
-                mFaceDetector.setCameraHeight(mCamera.getCameraHeight());
+                mFaceDetector.setCameraWidth(mCameraWidth);
+                mFaceDetector.setCameraHeight(mCameraHeight);
             }
-//            //设置相机参数
-//            mDisplayOrientation = FaceUtil.setCameraParams(this, mFaceDetector, mCamera, mCameraId, mCameraWidth, mCameraHeight);
-//            Log.i(TAG, "camera getPreviewSize width:" + mCamera.getParameters().getPreviewSize().width
-//                    + ",height:" + mCamera.getParameters().getPreviewSize().height);
-//            Log.i(TAG, "camera getPictureSize width:" + mCamera.getParameters().getPictureSize().width
-//                    + ",height:" + mCamera.getParameters().getPictureSize().height);
+            mFaceDetector.setZoomRatio(5f);
+            mFaceDetector.setOrientationOfCamera(mCamera.getOrientationOfCamera());
         } catch (Exception e) {
             closeCamera();
             mCheckListener.checkPixels(pixels, false);

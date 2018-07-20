@@ -514,4 +514,21 @@ class Camera1 extends CameraViewImpl {
     public int getCameraHeight() {
         return mPreview.getHeight();
     }
+
+    @Override
+    public int getPreviewWidth() {
+        return mCamera.getParameters().getPreviewSize().width;
+    }
+
+    @Override
+    public int getPreviewHeight() {
+        return mCamera.getParameters().getPreviewSize().height;
+    }
+
+    @Override
+    public int getOrientationOfCamera() {
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo(mCameraId, info);
+        return info.orientation;
+    }
 }

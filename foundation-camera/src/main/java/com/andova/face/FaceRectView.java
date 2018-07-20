@@ -70,23 +70,21 @@ public class FaceRectView extends SurfaceView implements SurfaceHolder.Callback 
 
     /**
      * 绘制人脸识别框
-     *
-     * @param mDetectorData
      */
-    public <T> void drawFaceRect(DetectorData<T> mDetectorData) {
+    public void drawFaceRect(DetectorData detectorData) {
         Canvas canvas = mHolder.lockCanvas();
         if (null == canvas) {
             return;
         }
 
-        if (mDetectorData == null || mDetectorData.getFaceRectList() == null) {
+        if (detectorData == null || detectorData.getFaceRectList() == null) {
             mHolder.unlockCanvasAndPost(canvas);
             return;
         }
 
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
-        if (mDetectorData.getFaceRectList() != null && mDetectorData.getFaceRectList().length > 0) {
-            for (Rect rect : mDetectorData.getFaceRectList()) {
+        if (detectorData.getFaceRectList() != null && detectorData.getFaceRectList().length > 0) {
+            for (Rect rect : detectorData.getFaceRectList()) {
                 FaceUtil.drawFaceRect(canvas, rect, mRectColor, mFaceIsRect);
             }
         } else {

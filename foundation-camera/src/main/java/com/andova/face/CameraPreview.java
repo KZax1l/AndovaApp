@@ -11,7 +11,8 @@ import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import com.andova.face.detector.ICameraPreview;
+import com.andova.face.detector.CameraProvider;
+import com.andova.face.detector.IPreview;
 import com.google.android.cameraview.CameraView;
 
 import static com.google.android.cameraview.CameraView.FACING_BACK;
@@ -24,7 +25,7 @@ import static com.google.android.cameraview.CameraView.FACING_FRONT;
  * @author kzaxil
  * @since 1.0.0
  */
-public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, ICameraPreview<Camera> {
+public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback, IPreview {
     private final String TAG = CameraPreview.class.getSimpleName();
     private SurfaceHolder mHolder;
     private Camera mCamera;
@@ -42,6 +43,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
      * 用来预览的高度（即如果展示了系统状态栏、系统底部导航栏，则要减去这些显示部分的高度值）
      */
     private int mCameraHeight;
+    private CameraProvider mCameraProvider = new CameraProvider();
 
     public CameraPreview(Context context) {
         super(context);
@@ -161,11 +163,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
             //设置预览回调
             mCamera.setPreviewCallback(new Camera.PreviewCallback() {
-
                 @Override
                 public void onPreviewFrame(byte[] data, Camera camera) {
                     if (mFaceDetector != null) {
-                        mFaceDetector.setCameraPreviewData(data, camera);
+                        mCameraProvider.previewWidth = camera.getParameters().getPreviewSize().width;
+                        mCameraProvider.previewHeight = camera.getParameters().getPreviewSize().height;
+                        mFaceDetector.setCameraPreviewData(data, mCameraProvider);
                         mFaceDetector.setOpenCamera(true);
                     }
                 }
@@ -221,11 +224,6 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         if (mFaceDetector != null) {
             mFaceDetector.release();
         }
-    }
-
-    @Override
-    public Camera getCamera() {
-        return mCamera;
     }
 
     @Override

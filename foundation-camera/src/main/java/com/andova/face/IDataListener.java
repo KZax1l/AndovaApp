@@ -7,6 +7,6 @@ package com.andova.face;
  * @author kzaxil
  * @since 1.0.0
  */
-public interface IDataListener<T> {
-    void onDetectorData(DetectorData<T> detectorData);
+public interface IDataListener {
+    void onDetectorData(DetectorData detectorData);
 }

@@ -7,7 +7,6 @@ import android.graphics.Matrix;
 import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
-import android.hardware.Camera;
 import android.media.FaceDetector;
 import android.util.Log;
 
@@ -22,7 +21,7 @@ import static com.google.android.cameraview.CameraView.FACING_FRONT;
  * @author kzaxil
  * @since 1.0.0
  */
-public class SystemFaceDetector<T> extends BaseFaceDetector<T> {
+public class SystemFaceDetector extends BaseFaceDetector {
     private final String TAG = SystemFaceDetector.class.getSimpleName();
 
     private FaceDetector.Face[] mFaces;
@@ -42,10 +41,9 @@ public class SystemFaceDetector<T> extends BaseFaceDetector<T> {
          * 将YUV转化为bitmap再进行相应的人脸检测，同时注意必须使用RGB_565，才能进行人脸检测，其余无效
          */
         try {
-            Camera.Size size = mCamera.getParameters().getPreviewSize();
-            YuvImage yuvImage = new YuvImage(mDetectorData.getFaceData(), ImageFormat.NV21, size.width, size.height, null);
+            YuvImage yuvImage = new YuvImage(mDetectorData.getFaceData(), ImageFormat.NV21, mCamera.previewWidth, mCamera.previewHeight, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            yuvImage.compressToJpeg(new Rect(0, 0, size.width, size.height), 100, baos);
+            yuvImage.compressToJpeg(new Rect(0, 0, mCamera.previewWidth, mCamera.previewHeight), 100, baos);
             mPreviewBuffer = baos.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,7 +62,7 @@ public class SystemFaceDetector<T> extends BaseFaceDetector<T> {
         int height = bitmap.getHeight();
         Matrix matrix = new Matrix();
         //设置各个角度的相机，这样我们的检测效果才是最好
-        switch (mOrientionOfCamera) {
+        switch (mOrientationOfCamera) {
             case 0:
                 matrix.postRotate(0.0f, width / 2, height / 2);
                 break;

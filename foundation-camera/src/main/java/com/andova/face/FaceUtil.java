@@ -90,9 +90,6 @@ public class FaceUtil {
 
     /**
      * 找出最大像素组合
-     *
-     * @param cameraSizes
-     * @return
      */
     public static Camera.Size findMaxCameraSize(List<Camera.Size> cameraSizes) {
         // 按照分辨率从大到小排序
@@ -221,9 +218,6 @@ public class FaceUtil {
 
     /**
      * 检查相机权限
-     *
-     * @param context
-     * @return
      */
     public static boolean checkCameraPermission(Context context) {
         if (context != null) {
@@ -237,17 +231,9 @@ public class FaceUtil {
 
     /**
      * 在摄像头启动前设置参数
-     *
-     * @param cameraPreview
-     * @param faceDetector
-     * @param camera
-     * @param cameraId
-     * @param width
-     * @param height
-     * @param <T>
      */
-    public static <T> int setCameraParams(CameraPreview cameraPreview, IFaceDetector<T> faceDetector, Camera camera,
-                                          int cameraId, int width, int height) {
+    public static int setCameraParams(CameraPreview cameraPreview, IFaceDetector faceDetector, Camera camera,
+                                      int cameraId, int width, int height) {
         if (camera == null) {
             return 0;
         }
@@ -299,15 +285,8 @@ public class FaceUtil {
 
     /**
      * 设置相机显示方向
-     *
-     * @param context
-     * @param faceDetector
-     * @param camera
-     * @param cameraId
-     * @param <T>
-     * @return
      */
-    public static <T> int setCameraDisplayOrientation(Context context, IFaceDetector<T> faceDetector, Camera camera, int cameraId) {
+    public static int setCameraDisplayOrientation(Context context, IFaceDetector faceDetector, Camera camera, int cameraId) {
         if (context == null) {
             return 0;
         }

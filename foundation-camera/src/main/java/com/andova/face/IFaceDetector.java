@@ -1,7 +1,6 @@
 package com.andova.face;
 
-import android.hardware.Camera;
-
+import com.andova.face.detector.CameraProvider;
 import com.google.android.cameraview.CameraView;
 
 /**
@@ -11,30 +10,30 @@ import com.google.android.cameraview.CameraView;
  * @author kzaxil
  * @since 1.0.0
  */
-public interface IFaceDetector<T> {
+public interface IFaceDetector {
     void detector();
 
     void release();
 
-    void setDataListener(IDataListener<T> mDataListener);
+    void setDataListener(IDataListener dataListener);
 
-    void setCameraPreviewData(byte[] data, Camera camera);
+    void setCameraPreviewData(byte[] data, CameraProvider camera);
 
-    void setMaxFacesCount(int mMaxFacesCount);
+    void setMaxFacesCount(int maxFacesCount);
 
-    void setCameraHeight(int mCameraHeight);
+    void setCameraHeight(int cameraHeight);
 
-    void setCameraWidth(int mCameraWidth);
+    void setCameraWidth(int cameraWidth);
 
-    void setPreviewHeight(int mPreviewHeight);
+    void setPreviewHeight(int previewHeight);
 
-    void setPreviewWidth(int mPreviewWidth);
+    void setPreviewWidth(int previewWidth);
 
-    void setCameraId(@CameraView.Facing int mCameraId);
+    void setCameraId(@CameraView.Facing int cameraId);
 
     void setOrientationOfCamera(int orientationOfCamera);
 
-    void setZoomRatio(float mZoomRatio);
+    void setZoomRatio(float zoomRatio);
 
     void setOpenCamera(boolean isOpenCamera);
 }

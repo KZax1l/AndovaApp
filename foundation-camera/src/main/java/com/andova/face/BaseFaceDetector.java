@@ -1,6 +1,6 @@
 package com.andova.face;
 
-import android.hardware.Camera;
+import com.andova.face.detector.CameraProvider;
 
 /**
  * Created by Administrator on 2018-03-09.
@@ -9,26 +9,25 @@ import android.hardware.Camera;
  * @author kzaxil
  * @since 1.0.0
  */
-public abstract class BaseFaceDetector<T> implements IFaceDetector<T>, Runnable {
-
+public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
     private Thread mThread;
     private boolean mStopTrack;
-    private IDataListener<T> mDataListener;
+    private IDataListener mDataListener;
 
-    protected DetectorData<T> mDetectorData;
-    protected Camera mCamera;
+    protected DetectorData mDetectorData;
+    protected CameraProvider mCamera;
     protected int mCameraId;
     protected float mZoomRatio;//缩放比例
     protected int mCameraWidth;
     protected int mCameraHeight;
     protected int mPreviewWidth;
     protected int mPreviewHeight;
-    protected int mOrientionOfCamera;
+    protected int mOrientationOfCamera;
     protected int mMaxFacesCount;
     protected boolean mOpenCamera = false;
 
     public BaseFaceDetector() {
-        mDetectorData = new DetectorData<>();
+        mDetectorData = new DetectorData();
     }
 
     @Override
@@ -73,22 +72,17 @@ public abstract class BaseFaceDetector<T> implements IFaceDetector<T>, Runnable 
 
     /**
      * 设置检测监听
-     *
-     * @param mDataListener
      */
     @Override
-    public void setDataListener(IDataListener<T> mDataListener) {
-        this.mDataListener = mDataListener;
+    public void setDataListener(IDataListener dataListener) {
+        this.mDataListener = dataListener;
     }
 
     /**
      * 设置预览数据
-     *
-     * @param data
-     * @param camera
      */
     @Override
-    public void setCameraPreviewData(byte[] data, Camera camera) {
+    public void setCameraPreviewData(byte[] data, CameraProvider camera) {
         if (mDetectorData != null) {
             mDetectorData.setFaceData(data);
         }
@@ -97,63 +91,51 @@ public abstract class BaseFaceDetector<T> implements IFaceDetector<T>, Runnable 
 
     /**
      * 设置识别最大人脸数量
-     *
-     * @param mMaxFacesCount
-     * @return
      */
     @Override
-    public void setMaxFacesCount(int mMaxFacesCount) {
-        this.mMaxFacesCount = mMaxFacesCount;
+    public void setMaxFacesCount(int maxFacesCount) {
+        this.mMaxFacesCount = maxFacesCount;
     }
 
     /**
      * 设置相机高度
      *
-     * @param mCameraHeight 相机高度
-     * @return
+     * @param cameraHeight 相机高度
      */
     @Override
-    public void setCameraHeight(int mCameraHeight) {
-        this.mCameraHeight = mCameraHeight;
+    public void setCameraHeight(int cameraHeight) {
+        this.mCameraHeight = cameraHeight;
     }
 
     /**
      * 设置相机宽度
-     *
-     * @param mCameraWidth 相机宽度
-     * @return
      */
     @Override
-    public void setCameraWidth(int mCameraWidth) {
-        this.mCameraWidth = mCameraWidth;
+    public void setCameraWidth(int cameraWidth) {
+        this.mCameraWidth = cameraWidth;
     }
 
     /**
      * 设置相机方向
+     * o
      *
-     * @param mOrientionOfCamera 相机方向
-     * @return
+     * @param orientationOfCamera 相机方向
      */
     @Override
-    public void setOrientationOfCamera(int mOrientionOfCamera) {
-        this.mOrientionOfCamera = mOrientionOfCamera;
+    public void setOrientationOfCamera(int orientationOfCamera) {
+        this.mOrientationOfCamera = orientationOfCamera;
     }
 
     /**
      * 设置缩放比例
-     *
-     * @param mZoomRatio
-     * @return
      */
     @Override
-    public void setZoomRatio(float mZoomRatio) {
-        this.mZoomRatio = mZoomRatio;
+    public void setZoomRatio(float zoomRatio) {
+        this.mZoomRatio = zoomRatio;
     }
 
     /**
      * 设置相机是否打开
-     *
-     * @param isOpenCamera
      */
     @Override
     public void setOpenCamera(boolean isOpenCamera) {
@@ -162,31 +144,25 @@ public abstract class BaseFaceDetector<T> implements IFaceDetector<T>, Runnable 
 
     /**
      * 设置相机ID
-     *
-     * @param mCameraId
      */
     @Override
-    public void setCameraId(int mCameraId) {
-        this.mCameraId = mCameraId;
+    public void setCameraId(int cameraId) {
+        this.mCameraId = cameraId;
     }
 
     /**
      * 设置预览高度
-     *
-     * @param mPreviewHeight
      */
     @Override
-    public void setPreviewHeight(int mPreviewHeight) {
-        this.mPreviewHeight = mPreviewHeight;
+    public void setPreviewHeight(int previewHeight) {
+        this.mPreviewHeight = previewHeight;
     }
 
     /**
      * 设置预览宽度
-     *
-     * @param mPreviewWidth
      */
     @Override
-    public void setPreviewWidth(int mPreviewWidth) {
-        this.mPreviewWidth = mPreviewWidth;
+    public void setPreviewWidth(int previewWidth) {
+        this.mPreviewWidth = previewWidth;
     }
 }

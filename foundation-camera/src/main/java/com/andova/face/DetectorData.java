@@ -15,7 +15,7 @@ import java.util.Arrays;
  * @author kzaxil
  * @since 1.0.0
  */
-public class DetectorData<T> implements Cloneable, Serializable {
+public class DetectorData implements Cloneable, Serializable {
     //原始数据
     private byte[] faceData;
     //脸部区域集合
@@ -30,8 +30,6 @@ public class DetectorData<T> implements Cloneable, Serializable {
     private int facesCount;
     //距离
     private float distance;
-    //外部导入数据
-    private T externalData;
 
     public float getDistance() {
         return distance;
@@ -39,15 +37,6 @@ public class DetectorData<T> implements Cloneable, Serializable {
 
     public DetectorData setDistance(float distance) {
         this.distance = distance;
-        return this;
-    }
-
-    public T getExternalData() {
-        return externalData;
-    }
-
-    public DetectorData setExternalData(T externalData) {
-        this.externalData = externalData;
         return this;
     }
 
@@ -119,7 +108,6 @@ public class DetectorData<T> implements Cloneable, Serializable {
                 ", faceBitmap=" + faceBitmap +
                 ", lightIntensity=" + lightIntensity +
                 ", facesCount=" + facesCount +
-                ", externalData=" + externalData +
                 '}';
     }
 }

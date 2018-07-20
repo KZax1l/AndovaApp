@@ -3,9 +3,10 @@ package com.andova.face;
 import android.graphics.Color;
 
 import com.andova.face.detector.ICameraPreview;
+import com.google.android.cameraview.CameraView;
 
-import static android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK;
-import static android.hardware.Camera.CameraInfo.CAMERA_FACING_FRONT;
+import static com.google.android.cameraview.CameraView.FACING_BACK;
+import static com.google.android.cameraview.Constants.FACING_FRONT;
 
 /**
  * Created by Administrator on 2018-03-09.
@@ -82,9 +83,8 @@ public class DetectorProxy<T> {
     /**
      * 设置相机预览为前置还是后置摄像头
      */
-    public void setCameraId(int mCameraId) {
-        if (mCameraId == CAMERA_FACING_BACK
-                || mCameraId == CAMERA_FACING_FRONT) {
+    public void setCameraId(@CameraView.Facing int mCameraId) {
+        if (mCameraId == FACING_BACK || mCameraId == FACING_FRONT) {
             if (mCameraPreview != null) {
                 mCameraPreview.setCameraId(mCameraId);
             }
@@ -141,6 +141,7 @@ public class DetectorProxy<T> {
         if (mFaceDetector != null) {
             mFaceDetector.detector();
         }
+        openCamera();
     }
 
     /**
@@ -164,11 +165,12 @@ public class DetectorProxy<T> {
     /**
      * 获取相机ID
      */
+    @CameraView.Facing
     public int getCameraId() {
         if (mCameraPreview != null) {
             return mCameraPreview.getCameraId();
         }
-        return CAMERA_FACING_BACK;
+        return FACING_BACK;
     }
 
     /**
@@ -189,7 +191,7 @@ public class DetectorProxy<T> {
         private ICameraCheckListener mCheckListener;
         private IDataListener<T> mDataListener;
         private IFaceDetector<T> mFaceDetector = new SystemFaceDetector<>();
-        private int mCameraId = CAMERA_FACING_BACK;
+        private int mCameraId = FACING_BACK;
         private long mMinCameraPixels = MIN_CAMERA_PIXELS;
         private int mMaxFacesCount = MAX_DETECTOR_FACES;
         private int mFaceRectColor = Color.rgb(255, 203, 15);
@@ -210,7 +212,7 @@ public class DetectorProxy<T> {
             return this;
         }
 
-        public Builder setCameraId(int mCameraId) {
+        public Builder setCameraId(@CameraView.Facing int mCameraId) {
             this.mCameraId = mCameraId;
             return this;
         }

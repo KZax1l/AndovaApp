@@ -56,7 +56,7 @@ public class CameraView extends FrameLayout {
      */
     @IntDef({FACING_BACK, FACING_FRONT})
     @Retention(RetentionPolicy.SOURCE)
-    @interface Facing {
+    public @interface Facing {
     }
 
     /**

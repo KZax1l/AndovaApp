@@ -2,6 +2,7 @@ package com.andova.face.detector;
 
 import com.andova.face.ICameraCheckListener;
 import com.andova.face.IFaceDetector;
+import com.google.android.cameraview.CameraView;
 
 /**
  * Created by Administrator on 2018-07-19.
@@ -18,17 +19,17 @@ public interface ICameraPreview<CAMERA> {
     /**
      * 设置人脸检测类，默认实现为原生检测类，可以替换成第三方库检测类
      */
-    ICameraPreview setFaceDetector(IFaceDetector mFaceDetector);
+    ICameraPreview setFaceDetector(IFaceDetector faceDetector);
 
     /**
      * 设置相机检查监听
      */
-    ICameraPreview setCheckListener(ICameraCheckListener mCheckListener);
+    ICameraPreview setCheckListener(ICameraCheckListener checkListener);
 
     /**
      * 设置相机预览为前置还是后置摄像头
      */
-    ICameraPreview setCameraId(int cameraId);
+    ICameraPreview setCameraId(@CameraView.Facing int cameraId);
 
     /**
      * 设置像素最低要求
@@ -43,6 +44,7 @@ public interface ICameraPreview<CAMERA> {
     /**
      * 获取相机ID
      */
+    @CameraView.Facing
     int getCameraId();
 
     /**

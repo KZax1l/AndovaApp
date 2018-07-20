@@ -2,6 +2,8 @@ package com.andova.face;
 
 import android.hardware.Camera;
 
+import com.google.android.cameraview.CameraView;
+
 /**
  * Created by Administrator on 2018-03-09.
  * <p>识别接口</p>
@@ -28,7 +30,7 @@ public interface IFaceDetector<T> {
 
     void setPreviewWidth(int mPreviewWidth);
 
-    void setCameraId(int mCameraId);
+    void setCameraId(@CameraView.Facing int mCameraId);
 
     void setOrientationOfCamera(int orientationOfCamera);
 

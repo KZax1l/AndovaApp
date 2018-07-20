@@ -12,6 +12,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 import com.andova.face.detector.ICameraPreview;
+import com.google.android.cameraview.CameraView;
+
+import static com.google.android.cameraview.CameraView.FACING_BACK;
+import static com.google.android.cameraview.CameraView.FACING_FRONT;
 
 /**
  * Created by Administrator on 2018-03-09.
@@ -24,6 +28,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private final String TAG = CameraPreview.class.getSimpleName();
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    @CameraView.Facing
     private int mCameraId;
     private long mMinCameraPixels;
     private ICameraCheckListener mCheckListener;
@@ -94,7 +99,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
         // 只有一个摄相头，打开后置
         if (Camera.getNumberOfCameras() == 1) {
-            mCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+            mCameraId = FACING_BACK;
         }
 
         if (mFaceDetector != null) {
@@ -106,7 +111,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             // setParameters 针对部分手机通过Camera.open()拿到的Camera对象不为null
             Camera.Parameters mParameters = mCamera.getParameters();
             mCamera.setParameters(mParameters);
-            if (Camera.CameraInfo.CAMERA_FACING_FRONT == mCameraId) {
+            if (FACING_FRONT == mCameraId) {
                 Log.i(TAG, "前置摄像头已开启");
             } else {
                 Log.i(TAG, "后置摄像头已开启");
@@ -236,12 +241,13 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     }
 
     @Override
+    @CameraView.Facing
     public int getCameraId() {
         return mCameraId;
     }
 
     @Override
-    public CameraPreview setCameraId(int mCameraId) {
+    public CameraPreview setCameraId(@CameraView.Facing int mCameraId) {
         this.mCameraId = mCameraId;
         return this;
     }

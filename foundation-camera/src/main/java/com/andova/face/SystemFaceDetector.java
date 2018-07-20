@@ -13,6 +13,8 @@ import android.util.Log;
 
 import java.io.ByteArrayOutputStream;
 
+import static com.google.android.cameraview.CameraView.FACING_FRONT;
+
 /**
  * Created by Administrator on 2018-03-09.
  * <p>利用系统提供的FaceDetector实现人脸识别</p>
@@ -122,7 +124,7 @@ public class SystemFaceDetector<T> extends BaseFaceDetector<T> {
             }
         }
         int width = (int) (mPreviewHeight * mZoomRatio / 5);
-        if (rect != null && mCameraId == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+        if (rect != null && mCameraId == FACING_FRONT) {
             int left = rect.left;
             rect.left = width - rect.right;
             rect.right = width - left;

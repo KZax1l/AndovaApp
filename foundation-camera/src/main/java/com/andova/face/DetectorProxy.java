@@ -141,7 +141,6 @@ public class DetectorProxy {
         if (mFaceDetector != null) {
             mFaceDetector.detector();
         }
-        openCamera();
     }
 
     /**

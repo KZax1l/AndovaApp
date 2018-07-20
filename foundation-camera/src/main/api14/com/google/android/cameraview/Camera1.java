@@ -86,6 +86,10 @@ class Camera1 extends CameraViewImpl {
 
     @Override
     boolean start() {
+        return start(true);
+    }
+
+    public boolean start(boolean previewFrame) {
         chooseCamera();
         openCamera();
         if (mPreview.isReady()) {
@@ -93,6 +97,14 @@ class Camera1 extends CameraViewImpl {
         }
         mShowingPreview = true;
         mCamera.startPreview();
+        if (previewFrame) {
+            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
+                @Override
+                public void onPreviewFrame(byte[] data, Camera camera) {
+                    mCallback.onPreviewFrame(data);
+                }
+            });
+        }
         return true;
     }
 
@@ -245,12 +257,6 @@ class Camera1 extends CameraViewImpl {
                     mCallback.onPictureTaken(data);
                     camera.cancelAutoFocus();
                     camera.startPreview();
-                }
-            });
-            mCamera.setPreviewCallback(new Camera.PreviewCallback() {
-                @Override
-                public void onPreviewFrame(byte[] data, Camera camera) {
-                    mCallback.onPreviewFrame(data);
                 }
             });
         }

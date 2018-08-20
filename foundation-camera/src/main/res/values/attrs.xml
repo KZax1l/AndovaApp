@@ -53,6 +53,9 @@
             -->
             <enum name="redEye" value="4" />
         </attr>
-        <attr name="useCamera1" format="boolean" />
+        <attr name="chooseCamera" format="enum">
+            <enum name="auto" value="0" />
+            <enum name="camera1" value="1" />
+        </attr>
     </declare-styleable>
 </resources>

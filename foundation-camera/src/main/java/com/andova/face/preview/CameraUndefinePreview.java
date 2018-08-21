@@ -139,6 +139,7 @@ public class CameraUndefinePreview extends SurfaceView implements SurfaceHolder.
                 if (pixels >= mMinCameraPixels) {
                     mCheckListener.checkPixels(pixels, true);
                 } else {
+                    System.out.println("camera support pixels is so small, close camera!");
                     closeCamera();
                     mCheckListener.checkPixels(pixels, false);
                     return;

@@ -1,5 +1,7 @@
 package com.andova.face;
 
+import android.support.annotation.NonNull;
+
 import com.andova.face.detector.CameraProvider;
 
 /**
@@ -14,17 +16,17 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
     private boolean mStopTrack;
     private IDataListener mDataListener;
 
-    protected DetectorData mDetectorData;
-    protected CameraProvider mCamera;
-    protected int mCameraId;
-    protected float mZoomRatio;//缩放比例
-    protected int mCameraWidth;
-    protected int mCameraHeight;
-    protected int mPreviewWidth;
-    protected int mPreviewHeight;
-    protected int mOrientationOfCamera;
-    protected int mMaxFacesCount;
-    protected boolean mOpenCamera = false;
+    private DetectorData mDetectorData;
+    private CameraProvider mCamera;
+    private int mCameraId;
+    private float mZoomRatio;//缩放比例
+    private int mCameraWidth;
+    private int mCameraHeight;
+    private int mPreviewWidth;
+    private int mPreviewHeight;
+    private int mOrientationOfCamera;
+    private int mMaxFacesCount;
+    private boolean mOpenCamera = false;
 
     public BaseFaceDetector() {
         mDetectorData = new DetectorData();
@@ -37,7 +39,10 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
             if (!mOpenCamera) {
                 continue;
             }
-            detectionFaces();
+            if (mCamera == null || mDetectorData.getFaceData() == null || mDetectorData.getFaceData().length == 0) {
+                continue;
+            }
+            detectionFaces(mDetectorData.getFaceData(), mCamera);
 
             if (mDataListener == null || mDetectorData.getFaceRectList() == null
                     || mDetectorData.getFaceRectList().length == 0) continue;
@@ -45,7 +50,7 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         }
     }
 
-    protected abstract void detectionFaces();
+    protected abstract void detectionFaces(@NonNull byte[] data, @NonNull CameraProvider camera);
 
     /**
      * 开启识别
@@ -69,6 +74,11 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
             mThread.interrupt();
             mThread = null;
         }
+    }
+
+    @NonNull
+    public DetectorData getDetectorData() {
+        return mDetectorData;
     }
 
     /**
@@ -98,6 +108,10 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         this.mMaxFacesCount = maxFacesCount;
     }
 
+    public int getMaxFacesCount() {
+        return mMaxFacesCount;
+    }
+
     /**
      * 设置相机高度
      *
@@ -108,12 +122,20 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         this.mCameraHeight = cameraHeight;
     }
 
+    public int getCameraHeight() {
+        return mCameraHeight;
+    }
+
     /**
      * 设置相机宽度
      */
     @Override
     public void setCameraWidth(int cameraWidth) {
         this.mCameraWidth = cameraWidth;
+    }
+
+    public int getCameraWidth() {
+        return mCameraWidth;
     }
 
     /**
@@ -127,12 +149,20 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         this.mOrientationOfCamera = orientationOfCamera;
     }
 
+    public int getOrientationOfCamera() {
+        return mOrientationOfCamera;
+    }
+
     /**
      * 设置缩放比例
      */
     @Override
     public void setZoomRatio(float zoomRatio) {
         this.mZoomRatio = zoomRatio;
+    }
+
+    public float getZoomRatio() {
+        return mZoomRatio;
     }
 
     /**
@@ -151,6 +181,10 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         this.mCameraId = cameraId;
     }
 
+    public int getCameraId() {
+        return mCameraId;
+    }
+
     /**
      * 设置预览高度
      */
@@ -159,11 +193,19 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         this.mPreviewHeight = previewHeight;
     }
 
+    public int getPreviewHeight() {
+        return mPreviewHeight;
+    }
+
     /**
      * 设置预览宽度
      */
     @Override
     public void setPreviewWidth(int previewWidth) {
         this.mPreviewWidth = previewWidth;
+    }
+
+    public int getPreviewWidth() {
+        return mPreviewWidth;
     }
 }

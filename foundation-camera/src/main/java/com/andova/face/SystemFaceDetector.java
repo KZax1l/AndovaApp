@@ -8,7 +8,10 @@ import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.media.FaceDetector;
+import android.support.annotation.NonNull;
 import android.util.Log;
+
+import com.andova.face.detector.CameraProvider;
 
 import java.io.ByteArrayOutputStream;
 
@@ -32,18 +35,15 @@ public class SystemFaceDetector extends BaseFaceDetector {
     }
 
     @Override
-    protected void detectionFaces() {
-        if (mCamera == null || mDetectorData.getFaceData() == null || mDetectorData.getFaceData().length == 0) {
-            return;
-        }
+    protected void detectionFaces(@NonNull byte[] data, @NonNull CameraProvider camera) {
         /**
          * 这里需要注意，回调出来的data不是我们直接意义上的RGB图 而是YUV图，因此我们需要
          * 将YUV转化为bitmap再进行相应的人脸检测，同时注意必须使用RGB_565，才能进行人脸检测，其余无效
          */
         try {
-            YuvImage yuvImage = new YuvImage(mDetectorData.getFaceData(), ImageFormat.NV21, mCamera.previewWidth, mCamera.previewHeight, null);
+            YuvImage yuvImage = new YuvImage(data, ImageFormat.NV21, camera.previewWidth, camera.previewHeight, null);
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            yuvImage.compressToJpeg(new Rect(0, 0, mCamera.previewWidth, mCamera.previewHeight), 100, baos);
+            yuvImage.compressToJpeg(new Rect(0, 0, camera.previewWidth, camera.previewHeight), 100, baos);
             mPreviewBuffer = baos.toByteArray();
         } catch (Exception e) {
             e.printStackTrace();
@@ -62,7 +62,7 @@ public class SystemFaceDetector extends BaseFaceDetector {
         int height = bitmap.getHeight();
         Matrix matrix = new Matrix();
         //设置各个角度的相机，这样我们的检测效果才是最好
-        switch (mOrientationOfCamera) {
+        switch (getOrientationOfCamera()) {
             case 0:
                 matrix.postRotate(0.0f, width / 2, height / 2);
                 break;
@@ -80,10 +80,10 @@ public class SystemFaceDetector extends BaseFaceDetector {
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, true);
 
         //初始化人脸检测
-        FaceDetector detector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), mMaxFacesCount);
-        mFaces = new FaceDetector.Face[mMaxFacesCount];
+        FaceDetector detector = new FaceDetector(bitmap.getWidth(), bitmap.getHeight(), getMaxFacesCount());
+        mFaces = new FaceDetector.Face[getMaxFacesCount()];
         //这里通过向findFaces中传递帧图转化后的bitmap和最大检测的人脸数face，返回检测后的人脸数
-        mDetectorData.setFacesCount(detector.findFaces(bitmap, mFaces));
+        getDetectorData().setFacesCount(detector.findFaces(bitmap, mFaces));
         //绘制识别后的人脸区域的类
         getFaceRect();
         bitmap.recycle();
@@ -93,16 +93,16 @@ public class SystemFaceDetector extends BaseFaceDetector {
      * 计算识别框
      */
     private void getFaceRect() {
-        Rect[] faceRectList = new Rect[mDetectorData.getFacesCount()];
+        Rect[] faceRectList = new Rect[getDetectorData().getFacesCount()];
         Rect rect = null;
         int index = 0;
         float distance = 0;
-        for (int i = 0; i < mDetectorData.getFacesCount(); i++) {
+        for (int i = 0; i < getDetectorData().getFacesCount(); i++) {
             faceRectList[i] = new Rect();
             FaceDetector.Face face = mFaces[i];
             if (face != null) {
                 float eyeDistance = face.eyesDistance();
-                eyeDistance = eyeDistance * mZoomRatio;
+                eyeDistance = eyeDistance * getZoomRatio();
                 if (eyeDistance > distance) {
                     distance = eyeDistance;
                     rect = faceRectList[i];
@@ -110,8 +110,8 @@ public class SystemFaceDetector extends BaseFaceDetector {
                 }
                 PointF midEyesPoint = new PointF();
                 face.getMidPoint(midEyesPoint);
-                midEyesPoint.x = midEyesPoint.x * mZoomRatio;
-                midEyesPoint.y = midEyesPoint.y * mZoomRatio;
+                midEyesPoint.x = midEyesPoint.x * getZoomRatio();
+                midEyesPoint.y = midEyesPoint.y * getZoomRatio();
                 Log.i(TAG, "eyeDistance:" + eyeDistance + ",midEyesPoint.x:" + midEyesPoint.x
                         + ",midEyesPoint.y:" + midEyesPoint.y);
                 faceRectList[i].set((int) (midEyesPoint.x - eyeDistance),
@@ -121,18 +121,18 @@ public class SystemFaceDetector extends BaseFaceDetector {
                 Log.i(TAG, "FaceRectList[" + i + "]:" + faceRectList[i]);
             }
         }
-        int width = (int) (mPreviewHeight * mZoomRatio / 5);
-        if (rect != null && mCameraId == FACING_FRONT) {
+        int width = (int) (getPreviewHeight() * getZoomRatio() / 5);
+        if (rect != null && getCameraId() == FACING_FRONT) {
             int left = rect.left;
             rect.left = width - rect.right;
             rect.right = width - left;
             faceRectList[index].left = rect.left;
             faceRectList[index].right = rect.right;
         }
-        mDetectorData.setLightIntensity(FaceUtil.getYUVLight(mDetectorData.getFaceData(), rect, width));
-        mDetectorData.setFaceRectList(faceRectList);
-        if (mCameraWidth > 0) {
-            mDetectorData.setDistance(distance * 2.5f / mCameraWidth);
+        getDetectorData().setLightIntensity(FaceUtil.getYUVLight(getDetectorData().getFaceData(), rect, width));
+        getDetectorData().setFaceRectList(faceRectList);
+        if (getCameraWidth() > 0) {
+            getDetectorData().setDistance(distance * 2.5f / getCameraWidth());
         }
     }
 }

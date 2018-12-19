@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!--<com.andova.face.CameraPreview-->
+    <!--android:id="@+id/camera_preview"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent" />-->
+
+    <com.andova.face.preview.CameraUndefinePreview
+        android:id="@+id/camera_preview"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <!--<com.google.android.cameraview.CameraView-->
+    <!--android:id="@+id/camera_view"-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--app:chooseCamera="camera1" />-->
+
+    <com.andova.face.FaceRectView
+        android:id="@+id/face_rect_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</FrameLayout>

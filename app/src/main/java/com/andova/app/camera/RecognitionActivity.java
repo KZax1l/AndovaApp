@@ -2,19 +2,19 @@ package com.andova.app.camera;
 
 import android.graphics.Color;
 import android.graphics.PixelFormat;
-import android.hardware.Camera;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
 import com.andova.app.BaseActivity;
 import com.andova.app.R;
-import com.andova.fdt.camera.CameraPreview;
-import com.andova.fdt.camera.DetectorData;
-import com.andova.fdt.camera.DetectorProxy;
-import com.andova.fdt.camera.FaceRectView;
-import com.andova.fdt.camera.ICameraCheckListener;
-import com.andova.fdt.camera.IDataListener;
-import com.andova.fdt.camera.NormalFaceDetector;
+import com.andova.face.DetectorData;
+import com.andova.face.DetectorProxy;
+import com.andova.face.FaceRectView;
+import com.andova.face.ICameraCheckListener;
+import com.andova.face.IDataListener;
+import com.andova.face.SystemFaceDetector;
+import com.andova.face.preview.CameraUndefinePreview;
+import com.google.android.cameraview.CameraView;
 
 /**
  * Created by Administrator on 2018-03-12.
@@ -23,14 +23,18 @@ import com.andova.fdt.camera.NormalFaceDetector;
  * @since 1.0.0
  */
 public class RecognitionActivity extends BaseActivity {
+    //    private CameraPreview mCameraPreview;
+//    private CameraView mCameraView;
     private DetectorProxy mDetectorProxy;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_module_camera);
+//        mCameraPreview = findViewById(R.id.camera_preview);
+//        mCameraView = findViewById(R.id.camera_view);
         initFaceDetect();
-        if (mDetectorProxy != null) mDetectorProxy.detector();
+//        new AlertDialog.Builder(this).setMessage("message").setTitle("title").create().show();
     }
 
     private void initFaceDetect() {
@@ -38,6 +42,7 @@ public class RecognitionActivity extends BaseActivity {
             @Override
             public void onDetectorData(final DetectorData detectorData) {
                 if (detectorData.getFaceRectList().length <= 0) return;
+//                Bitmap bitmap = ImageUtil.decodeToBitmap(detectorData.getFaceData(), mCameraPreview.getCamera());
                 System.out.println("线程：" + Thread.currentThread().getName() + "，识别数据:" + detectorData);
             }
         };
@@ -58,9 +63,10 @@ public class RecognitionActivity extends BaseActivity {
         faceRectView.setZOrderOnTop(true);
         faceRectView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
         //创建代理类，必须传入相机预览界面
-        mDetectorProxy = new DetectorProxy.Builder((CameraPreview) findViewById(R.id.camera_preview))
+        mDetectorProxy = new DetectorProxy.Builder((CameraUndefinePreview) findViewById(R.id.camera_preview))
                 //设置人脸检测实现
-                .setFaceDetector(new NormalFaceDetector())
+                .setFaceDetector(new SystemFaceDetector())
+                .setMinCameraPixels(2000000)
                 //设置检测数据回调监听
                 .setDataListener(mDataListener)
                 //设置权限检查监听
@@ -70,7 +76,7 @@ public class RecognitionActivity extends BaseActivity {
                 //设置是否绘制人脸检测框
                 .setDrawFaceRect(true)
                 //设置预览相机的相机ID
-                .setCameraId(Camera.CameraInfo.CAMERA_FACING_FRONT)
+                .setCameraId(CameraView.FACING_FRONT)
                 //设置可检测的最大人脸数
                 .setMaxFacesCount(5)
                 //设置人脸识别框是否为完整矩形
@@ -79,11 +85,22 @@ public class RecognitionActivity extends BaseActivity {
                 .setFaceRectColor(Color.rgb(255, 203, 15))
                 //创建代理类
                 .build();
+        if (mDetectorProxy != null) mDetectorProxy.detector();
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    protected void onResume() {
+        super.onResume();
+//        if (mDetectorProxy != null) {
+//            mDetectorProxy.detector();
+////            mDetectorProxy.openCamera();
+//        }
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
         if (mDetectorProxy != null) mDetectorProxy.release();
     }
 }

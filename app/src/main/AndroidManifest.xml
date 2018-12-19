@@ -29,12 +29,17 @@
             android:screenOrientation="portrait" />
         <activity
             android:name="com.andova.app.camera.RecognitionActivity"
-            android:screenOrientation="portrait"
+            android:screenOrientation="landscape"
             android:theme="@style/AppTheme.Activity.FullScreen" />
 
         <service
             android:name="com.andova.app.music.player.MusicService"
             android:process=":music" />
+        <activity
+            android:name="com.andova.app.camera.CameraViewActivity"
+            android:screenOrientation="portrait">
+
+        </activity>
     </application>
 
 </manifest>

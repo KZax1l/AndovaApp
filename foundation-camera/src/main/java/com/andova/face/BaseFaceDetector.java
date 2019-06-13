@@ -50,6 +50,7 @@ public abstract class BaseFaceDetector implements IFaceDetector, Runnable {
         }
     }
 
+    // TODO: 2018-12-19 设置直接返回DetectorData对象
     protected abstract void detectionFaces(@NonNull byte[] data, @NonNull CameraProvider camera);
 
     /**
